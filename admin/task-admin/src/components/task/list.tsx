@@ -6,6 +6,7 @@ import {
     DateField,
     EditButton,
     DeleteButton,
+    BooleanField
 } from 'react-admin'
 
 const TaskList = (props) => {
@@ -14,7 +15,9 @@ const TaskList = (props) => {
             <Datagrid>
                 <TextField source='id' />
                 <TextField source='name' />
+                <BooleanField source='is_active' />
                 <TextField source='schedule' />
+                <TextField source='next_time' />
                 <TextField source='webhook_type' />
                 <TextField source='webhook' />
                 <EditButton />

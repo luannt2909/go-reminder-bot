@@ -21,6 +21,7 @@ func (j job) Schedule() string {
 }
 
 func (j job) Run() {
+	fmt.Println("message: ", j.task.Message)
 	err := j.pusher.PushMessage(context.Background(), j.task.WebhookType, j.task.Webhook, j.task.Message)
 	if err != nil {
 		fmt.Println(err)

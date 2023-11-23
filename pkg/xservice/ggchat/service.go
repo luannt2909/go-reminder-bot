@@ -14,7 +14,8 @@ type service struct{}
 func (s service) PushMessage(ctx context.Context, webhook, message string) error {
 	client := resty.New()
 	body := map[string]interface{}{
-		"text": message,
+		"text":          message,
+		"formattedText": message,
 	}
 	_, err := client.R().
 		SetHeader("Content-Type", "application/json").

@@ -1,16 +1,18 @@
 import React from 'react'
-import { Edit, SimpleForm, TextInput, DateInput } from 'react-admin'
-import { RichTextInput } from 'ra-input-rich-text';
+import {BooleanInput, Edit, SelectInput, SimpleForm, TextInput, useInput} from 'react-admin'
+import {WebhookTypes} from "./webhookType";
 
 const TaskEdit = (props) => {
     return (
         <Edit title='Edit Task' {...props}>
             <SimpleForm>
-                <TextInput disabled source='id' />
-                <TextInput source='name' />
-                <TextInput multiline source='schedule' />
-                <TextInput multiline source='webhook' />
-                <RichTextInput multiline source='message' />
+                <TextInput disabled source='id'/>
+                <TextInput source='name' required fullWidth/>
+                <BooleanInput source='is_active'/>
+                <TextInput source='schedule' required fullWidth/>
+                <SelectInput choices={WebhookTypes} required source='webhook_type'/>
+                <TextInput multiline fullWidth required source='webhook'/>
+                <TextInput source='message' multiline fullWidth required/>
             </SimpleForm>
         </Edit>
     )

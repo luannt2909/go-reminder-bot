@@ -84,6 +84,7 @@ func (h Handler) updateTask(c *gin.Context) {
 	task.Schedule = req.Schedule
 	task.Message = req.Message
 	task.Webhook = req.Webhook
+	task.IsActive = req.IsActive
 	task.WebhookType = enum.ParseWebhookType(req.WebhookType)
 	err = h.Update(c, task)
 	if err != nil {
@@ -109,6 +110,7 @@ func (h Handler) createTask(c *gin.Context) {
 	task := task.Task{
 		Name:        req.Name,
 		Schedule:    req.Schedule,
+		IsActive:    req.IsActive,
 		Message:     req.Message,
 		Webhook:     req.Webhook,
 		WebhookType: enum.ParseWebhookType(req.WebhookType),

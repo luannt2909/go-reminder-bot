@@ -58,7 +58,7 @@ func (t *storage) GetList(ctx context.Context, param GetListParams) (tasks []Tas
 
 func (t *storage) GetActiveTasks(ctx context.Context) (tasks []Task, err error) {
 	err = t.db.WithContext(ctx).
-		//Where("is_active", true).
+		Where("is_active", true).
 		Find(&tasks).Error
 	if err != nil {
 		return

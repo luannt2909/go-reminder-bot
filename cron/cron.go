@@ -35,6 +35,10 @@ func (c *cronJob) buildListJobs(ctx context.Context) (jobs []*job, err error) {
 	if err != nil {
 		return
 	}
+	if len(tasks) == 0 {
+		fmt.Println("skip build jobs, list task is empty")
+		return
+	}
 	fmt.Println("tasks: ", tasks)
 	jobs = make([]*job, 0, len(tasks))
 	for _, t := range tasks {
@@ -49,6 +53,7 @@ func (c *cronJob) Start(ctx context.Context) {
 	jobs, err := c.buildListJobs(ctx)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 	err = c.runJobs(ctx, jobs)
 	if err != nil {
@@ -65,6 +70,7 @@ func (c *cronJob) Reload(ctx context.Context) {
 	jobs, err := c.buildListJobs(ctx)
 	if err != nil {
 		fmt.Println(err)
+		return
 	}
 	err = c.runJobs(ctx, jobs)
 	if err != nil {
