@@ -16,7 +16,7 @@ func (s service) PushMessage(ctx context.Context, webhook, message string) error
 	body := map[string]interface{}{
 		"text": message,
 	}
-	rsp, err := client.R().
+	_, err := client.R().
 		SetHeader("Content-Type", "application/json").
 		SetBody(body).
 		Post(webhook)
@@ -24,7 +24,6 @@ func (s service) PushMessage(ctx context.Context, webhook, message string) error
 		fmt.Println(err)
 		return err
 	}
-	fmt.Println(rsp.String())
 	return nil
 }
 

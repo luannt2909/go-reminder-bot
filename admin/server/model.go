@@ -2,7 +2,7 @@ package server
 
 import (
 	"encoding/json"
-	task2 "taskbot/pkg/task"
+	"taskbot/pkg/task"
 )
 
 type GetListTaskRequest struct {
@@ -11,8 +11,8 @@ type GetListTaskRequest struct {
 	Sort   string                 `form:"sort"`
 }
 
-func (r GetListTaskRequest) toGetListParams() task2.GetListParams {
-	p := task2.GetListParams{
+func (r GetListTaskRequest) toGetListParams() task.GetListParams {
+	p := task.GetListParams{
 		Filter:   r.Filter,
 		Limit:    10,
 		Offset:   0,
@@ -46,7 +46,7 @@ type Task struct {
 	WebhookType string `json:"webhook_type"`
 }
 
-func transformTasksFromTasksDB(tasks []task2.Task) []Task {
+func transformTasksFromTasksDB(tasks []task.Task) []Task {
 	result := make([]Task, 0, len(tasks))
 	for _, task := range tasks {
 		result = append(result, transformTaskFromTaskDB(task))
@@ -54,7 +54,7 @@ func transformTasksFromTasksDB(tasks []task2.Task) []Task {
 	return result
 }
 
-func transformTaskFromTaskDB(t task2.Task) Task {
+func transformTaskFromTaskDB(t task.Task) Task {
 	return Task{
 		ID:          int64(t.Model.ID),
 		Name:        t.Name,

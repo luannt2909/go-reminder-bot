@@ -53,8 +53,6 @@ func (t *storage) GetList(ctx context.Context, param GetListParams) (tasks []Tas
 	if err != nil {
 		return
 	}
-	fmt.Println("tasks: ", tasks)
-	fmt.Println("count: ", count)
 	return
 }
 
@@ -65,7 +63,6 @@ func (t *storage) GetActiveTasks(ctx context.Context) (tasks []Task, err error) 
 	if err != nil {
 		return
 	}
-	fmt.Println("tasks: ", tasks)
 	return
 }
 

@@ -36,7 +36,7 @@ func InitSQLiteDB() (*gorm.DB, error) {
 		fmt.Println(err)
 		return nil, err
 	}
-	db = db.Debug()
+	//db = db.Debug()
 	if !isExistedDB {
 		_ = db.AutoMigrate(&task.Task{})
 		db.Create(&task.Task{

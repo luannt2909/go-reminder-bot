@@ -1,20 +1,24 @@
 package server
 
 import (
+	"context"
 	"fmt"
+	"github.com/asaskevich/EventBus"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+	"taskbot/pkg/consts"
 	"taskbot/pkg/enum"
 	"taskbot/pkg/task"
 )
 
 type Handler struct {
 	task.Storage
+	EventBus.Bus
 }
 
-func NewHandler(storage task.Storage) *Handler {
-	return &Handler{storage}
+func NewHandler(storage task.Storage, eventBus EventBus.Bus) *Handler {
+	return &Handler{storage, eventBus}
 }
 
 func (h Handler) findTask(c *gin.Context) {
@@ -24,15 +28,12 @@ func (h Handler) findTask(c *gin.Context) {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	fmt.Println("Req:", req)
 	p := req.toGetListParams()
-	fmt.Println("params", p)
 	list, count, err := h.GetList(c, p)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	fmt.Println(list, count)
 	c.Header("Content-Range", fmt.Sprintf("%d-%d/%d", p.Offset, p.Limit, count))
 	c.JSON(http.StatusOK, transformTasksFromTasksDB(list))
 }
@@ -61,6 +62,7 @@ func (h Handler) deleteTask(c *gin.Context) {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+	h.triggerReloadJob(c.Request.Context())
 	c.JSON(http.StatusOK, transformTaskFromTaskDB(task))
 }
 
@@ -93,6 +95,7 @@ func (h Handler) updateTask(c *gin.Context) {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+	h.triggerReloadJob(c.Request.Context())
 	c.JSON(http.StatusOK, transformTaskFromTaskDB(task))
 }
 
@@ -115,5 +118,10 @@ func (h Handler) createTask(c *gin.Context) {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+	h.triggerReloadJob(c.Request.Context())
 	c.JSON(http.StatusOK, transformTaskFromTaskDB(task))
+}
+
+func (h Handler) triggerReloadJob(ctx context.Context) {
+	go h.Bus.Publish(consts.TaskEventBusTopic, context.Background())
 }
