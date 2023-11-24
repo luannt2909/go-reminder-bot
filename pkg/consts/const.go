@@ -1,3 +1,3 @@
 package consts
 
-const TaskEventBusTopic = "task:reload"
+const ReminderEventBusTopic = "reminder:reload"

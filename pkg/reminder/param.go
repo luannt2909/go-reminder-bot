@@ -1,4 +1,4 @@
-package task
+package reminder
 
 type GetListParams struct {
 	Filter           map[string]interface{}

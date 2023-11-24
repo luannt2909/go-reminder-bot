@@ -2,10 +2,10 @@ package cmd
 
 import (
 	"context"
+	"go-reminder-bot/admin/server"
+	"go-reminder-bot/cron"
+	"go-reminder-bot/di"
 	"go.uber.org/fx"
-	"taskbot/admin/server"
-	"taskbot/cron"
-	"taskbot/di"
 )
 
 func Execute() error {

@@ -2,19 +2,19 @@ package di
 
 import (
 	"github.com/asaskevich/EventBus"
+	"go-reminder-bot/admin/server"
+	"go-reminder-bot/cron"
+	"go-reminder-bot/pkg/db"
+	"go-reminder-bot/pkg/pusher"
+	"go-reminder-bot/pkg/reminder"
+	"go-reminder-bot/pkg/xservice/ggchat"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
-	"taskbot/admin/server"
-	"taskbot/cron"
-	"taskbot/pkg/db"
-	"taskbot/pkg/pusher"
-	"taskbot/pkg/task"
-	"taskbot/pkg/xservice/ggchat"
 )
 
 var Module = fx.Provide(
 	provideSqlDB,
-	provideTaskStorage,
+	provideReminderStorage,
 	provideServer,
 	provideGGChatService,
 	providePusher,
@@ -26,8 +26,8 @@ func provideSqlDB() (*gorm.DB, error) {
 	return db.InitSQLiteDB()
 }
 
-func provideTaskStorage(db *gorm.DB) task.Storage {
-	return task.NewStorage(db)
+func provideReminderStorage(db *gorm.DB) reminder.Storage {
+	return reminder.NewStorage(db)
 }
 
 func provideGGChatService() ggchat.Service {
@@ -38,12 +38,12 @@ func providePusher(ggChatSvc ggchat.Service) pusher.Pusher {
 	return pusher.NewPusher(ggChatSvc)
 }
 
-func provideServer(storage task.Storage, eventBus EventBus.Bus) server.Server {
+func provideServer(storage reminder.Storage, eventBus EventBus.Bus) server.Server {
 	handler := server.NewHandler(storage, eventBus)
 	return server.NewServer(*handler)
 }
 
-func provideCronjob(storage task.Storage, pusher pusher.Pusher, eventBus EventBus.Bus) cron.CronJob {
+func provideCronjob(storage reminder.Storage, pusher pusher.Pusher, eventBus EventBus.Bus) cron.CronJob {
 	return cron.NewCron(storage, pusher, eventBus)
 }
 

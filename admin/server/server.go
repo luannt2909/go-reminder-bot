@@ -24,8 +24,9 @@ func NewServer(handler Handler) Server {
 
 func (s server) Start(ctx context.Context) {
 	h := s.handler
-	r := gin.Default()
-	r.Use(cors.New(cors.Config{
+	g := gin.Default()
+	g.Static("/admin", "./admin/reminder-admin/dist")
+	g.Use(cors.New(cors.Config{
 		AllowAllOrigins:  true,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
 		AllowHeaders:     []string{"*"},
@@ -33,12 +34,13 @@ func (s server) Start(ctx context.Context) {
 		AllowCredentials: false,
 		MaxAge:           86400,
 	}))
+	r := g.Group("/api/v1")
 	{
-		r.GET("/tasks", h.findTask)
-		r.GET("/tasks/:id", h.getOneTask)
-		r.POST("/tasks", h.createTask)
-		r.PUT("/tasks/:id", h.updateTask)
-		r.DELETE("/tasks/:id", h.deleteTask)
+		r.GET("/reminders", h.findReminders)
+		r.GET("/reminders/:id", h.getOneReminder)
+		r.POST("/reminders", h.createReminder)
+		r.PUT("/reminders/:id", h.updateReminder)
+		r.DELETE("/reminders/:id", h.deleteReminder)
 	}
-	r.Run(":3001")
+	g.Run(":2909")
 }

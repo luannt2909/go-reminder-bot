@@ -1,4 +1,4 @@
-module taskbot
+module go-reminder-bot
 
 go 1.19
 

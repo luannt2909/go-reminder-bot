@@ -2,18 +2,18 @@ package server
 
 import (
 	"encoding/json"
-	"taskbot/pkg/task"
-	"taskbot/pkg/util"
+	"go-reminder-bot/pkg/reminder"
+	"go-reminder-bot/pkg/util"
 )
 
-type GetListTaskRequest struct {
+type GetListReminderRequest struct {
 	Filter map[string]interface{} `form:"filter"`
 	Range  string                 `form:"range"`
 	Sort   string                 `form:"sort"`
 }
 
-func (r GetListTaskRequest) toGetListParams() task.GetListParams {
-	p := task.GetListParams{
+func (r GetListReminderRequest) toGetListParams() reminder.GetListParams {
+	p := reminder.GetListParams{
 		Filter:   r.Filter,
 		Limit:    10,
 		Offset:   0,
@@ -37,7 +37,7 @@ func (r GetListTaskRequest) toGetListParams() task.GetListParams {
 	return p
 }
 
-type Task struct {
+type Reminder struct {
 	ID          int64  `json:"id"`
 	Name        string `json:"name"`
 	IsActive    bool   `json:"is_active"`
@@ -49,22 +49,22 @@ type Task struct {
 	WebhookType string `json:"webhook_type"`
 }
 
-func transformTasksFromTasksDB(tasks []task.Task) []Task {
-	result := make([]Task, 0, len(tasks))
-	for _, task := range tasks {
-		result = append(result, transformTaskFromTaskDB(task))
+func transformRemindersFromRemindersDB(reminders []reminder.Reminder) []Reminder {
+	result := make([]Reminder, 0, len(reminders))
+	for _, reminder := range reminders {
+		result = append(result, transformReminderFromReminderDB(reminder))
 	}
 	return result
 }
 
-func transformTaskFromTaskDB(t task.Task) Task {
+func transformReminderFromReminderDB(t reminder.Reminder) Reminder {
 	var nextTime string
 	if nTime, err := util.Parse(t.Schedule); err == nil {
 		nextTime = nTime.Format("15:04:05 02-01-2006")
 	} else {
 		nextTime = "invalid"
 	}
-	return Task{
+	return Reminder{
 		ID:          int64(t.Model.ID),
 		Name:        t.Name,
 		IsActive:    t.IsActive,

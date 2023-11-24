@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"github.com/asaskevich/EventBus"
 	"github.com/robfig/cron/v3"
-	"taskbot/pkg/consts"
-	"taskbot/pkg/pusher"
-	"taskbot/pkg/task"
+	"go-reminder-bot/pkg/consts"
+	"go-reminder-bot/pkg/pusher"
+	"go-reminder-bot/pkg/reminder"
 )
 
 type CronJob interface {
@@ -17,31 +17,31 @@ type CronJob interface {
 }
 type cronJob struct {
 	*cron.Cron
-	storage  task.Storage
+	storage  reminder.Storage
 	pusher   pusher.Pusher
 	eventBus EventBus.Bus
 }
 
 func (c *cronJob) configure(ctx context.Context) {
 	c.Cron = cron.New()
-	err := c.eventBus.Subscribe(consts.TaskEventBusTopic, c.Reload)
+	err := c.eventBus.Subscribe(consts.ReminderEventBusTopic, c.Reload)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
 func (c *cronJob) buildListJobs(ctx context.Context) (jobs []*job, err error) {
-	tasks, err := c.storage.GetActiveTasks(ctx)
+	reminders, err := c.storage.GetActiveReminder(ctx)
 	if err != nil {
 		return
 	}
-	if len(tasks) == 0 {
-		fmt.Println("skip build jobs, list task is empty")
+	if len(reminders) == 0 {
+		fmt.Println("skip build jobs, list reminder is empty")
 		return
 	}
-	fmt.Println("tasks: ", tasks)
-	jobs = make([]*job, 0, len(tasks))
-	for _, t := range tasks {
+	fmt.Println("reminders: ", reminders)
+	jobs = make([]*job, 0, len(reminders))
+	for _, t := range reminders {
 		job := NewJob(t, c.pusher)
 		jobs = append(jobs, job)
 	}
@@ -99,13 +99,13 @@ func (c *cronJob) Stop(ctx context.Context) {
 	if c.Cron != nil {
 		c.Cron.Stop()
 	}
-	err := c.eventBus.Unsubscribe(consts.TaskEventBusTopic, c.Reload)
+	err := c.eventBus.Unsubscribe(consts.ReminderEventBusTopic, c.Reload)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
-func NewCron(storage task.Storage, pusher pusher.Pusher, eventBus EventBus.Bus) CronJob {
+func NewCron(storage reminder.Storage, pusher pusher.Pusher, eventBus EventBus.Bus) CronJob {
 	return &cronJob{
 		storage:  storage,
 		pusher:   pusher,

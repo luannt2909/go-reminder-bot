@@ -1,7 +1,7 @@
 package main
 
 import (
-	"taskbot/cmd"
+	"go-reminder-bot/cmd"
 )
 
 func main() {

@@ -1,21 +1,20 @@
 import React from 'react'
-import {BooleanInput, Edit, SelectInput, SimpleForm, TextInput, useInput} from 'react-admin'
-import {WebhookTypes} from "./webhookType";
+import {BooleanInput, Create, SelectInput, SimpleForm, TextInput} from 'react-admin'
+import {WebhookTypes} from './webhookType'
 
-const TaskEdit = (props) => {
+const ReminderCreate = (props) => {
     return (
-        <Edit title='Edit Task' {...props}>
+        <Create title='Create a Reminder' {...props}>
             <SimpleForm>
-                <TextInput disabled source='id'/>
                 <TextInput source='name' required fullWidth/>
                 <BooleanInput source='is_active'/>
                 <TextInput source='schedule' required fullWidth/>
                 <SelectInput choices={WebhookTypes} required source='webhook_type'/>
                 <TextInput multiline fullWidth required source='webhook'/>
-                <TextInput source='message' multiline fullWidth required/>
+                <TextInput multiline fullWidth required source='message'/>
             </SimpleForm>
-        </Edit>
+        </Create>
     )
 }
 
-export default TaskEdit
+export default ReminderCreate

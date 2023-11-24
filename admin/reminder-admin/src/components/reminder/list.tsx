@@ -9,7 +9,7 @@ import {
     BooleanField
 } from 'react-admin'
 
-const TaskList = (props) => {
+const ReminderList = (props) => {
     return (
         <List {...props}>
             <Datagrid>
@@ -27,4 +27,4 @@ const TaskList = (props) => {
     )
 }
 
-export default TaskList
+export default ReminderList

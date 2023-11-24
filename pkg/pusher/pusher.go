@@ -2,8 +2,8 @@ package pusher
 
 import (
 	"context"
-	"taskbot/pkg/enum"
-	"taskbot/pkg/xservice/ggchat"
+	"go-reminder-bot/pkg/enum"
+	"go-reminder-bot/pkg/xservice/ggchat"
 )
 
 type Pusher interface {

@@ -3,31 +3,31 @@ package cron
 import (
 	"context"
 	"fmt"
-	"taskbot/pkg/pusher"
-	"taskbot/pkg/task"
+	"go-reminder-bot/pkg/pusher"
+	"go-reminder-bot/pkg/reminder"
 )
 
 type job struct {
-	task   task.Task
-	pusher pusher.Pusher
+	reminder reminder.Reminder
+	pusher   pusher.Pusher
 }
 
-func NewJob(task task.Task, pusher pusher.Pusher) *job {
-	return &job{task: task, pusher: pusher}
+func NewJob(reminder reminder.Reminder, pusher pusher.Pusher) *job {
+	return &job{reminder: reminder, pusher: pusher}
 }
 
 func (j job) Schedule() string {
-	return j.task.Schedule
+	return j.reminder.Schedule
 }
 
 func (j job) Run() {
-	fmt.Println("message: ", j.task.Message)
-	err := j.pusher.PushMessage(context.Background(), j.task.WebhookType, j.task.Webhook, j.task.Message)
+	fmt.Println("message: ", j.reminder.Message)
+	err := j.pusher.PushMessage(context.Background(), j.reminder.WebhookType, j.reminder.Webhook, j.reminder.Message)
 	if err != nil {
 		fmt.Println(err)
 	}
 }
 
 func (j job) Name() string {
-	return j.task.Name
+	return j.reminder.Name
 }

@@ -3,15 +3,15 @@ package db
 import (
 	"fmt"
 	_ "github.com/mattn/go-sqlite3"
+	"go-reminder-bot/pkg/enum"
+	"go-reminder-bot/pkg/reminder"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"os"
-	"taskbot/pkg/enum"
-	"taskbot/pkg/task"
 	"time"
 )
 
-const dbFileName = "./tmp/taskbot.db"
+const dbFileName = "./tmp/go-reminder-bot.db"
 
 func fileExists(filename string) bool {
 	info, err := os.Stat(filename)
@@ -38,11 +38,11 @@ func InitSQLiteDB() (*gorm.DB, error) {
 	}
 	//db = db.Debug()
 	if !isExistedDB {
-		_ = db.AutoMigrate(&task.Task{})
-		db.Create(&task.Task{
-			Name:        "Daily reminder task report",
+		_ = db.AutoMigrate(&reminder.Reminder{})
+		db.Create(&reminder.Reminder{
+			Name:        "Daily reminder reminder report",
 			Schedule:    "* * * * * *",
-			Message:     "report task please",
+			Message:     "report reminder please",
 			Webhook:     "webhook",
 			WebhookType: enum.WTGoogleChat,
 			IsActive:    false,
