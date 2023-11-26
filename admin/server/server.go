@@ -25,7 +25,7 @@ func NewServer(handler Handler) Server {
 func (s server) Start(ctx context.Context) {
 	h := s.handler
 	g := gin.Default()
-	g.Static("/admin", "./admin/reminder-admin/dist")
+	//g.Static("/admin", "./admin/reminder-admin/dist")
 	g.Use(cors.New(cors.Config{
 		AllowAllOrigins:  true,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},
@@ -35,12 +35,33 @@ func (s server) Start(ctx context.Context) {
 		MaxAge:           86400,
 	}))
 	r := g.Group("/api/v1")
+	webhookG := r.Group("/webhook")
 	{
-		r.GET("/reminders", h.findReminders)
-		r.GET("/reminders/:id", h.getOneReminder)
-		r.POST("/reminders", h.createReminder)
-		r.PUT("/reminders/:id", h.updateReminder)
-		r.DELETE("/reminders/:id", h.deleteReminder)
+		webhookG.POST("/send", h.SendMessage)
 	}
-	g.Run(":2909")
+	authG := r.Group("/auth")
+	{
+		authG.POST("/authenticate", h.Login)
+		authG.POST("/logout", AuthenticateUser)
+	}
+
+	authGroup := r.Group("", AuthenticateUser)
+	reminderG := authGroup.Group("/reminders")
+	{
+		reminderG.GET("", h.findReminders)
+		reminderG.GET("/:id", h.getOneReminder)
+		reminderG.POST("", h.createReminder)
+		reminderG.PUT("/:id", h.updateReminder)
+		reminderG.DELETE("/:id", h.deleteReminder)
+	}
+	userG := authGroup.Group("/users")
+	{
+		userG.GET("", h.findUsers)
+		userG.GET("/:id", h.getOneUser)
+		userG.POST("", h.createUser)
+		userG.PUT("/:id", h.updateUser)
+		userG.DELETE("/:id", h.deleteUser)
+	}
+
+	g.Run()
 }

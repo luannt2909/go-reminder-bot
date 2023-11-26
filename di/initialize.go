@@ -7,6 +7,7 @@ import (
 	"go-reminder-bot/pkg/db"
 	"go-reminder-bot/pkg/pusher"
 	"go-reminder-bot/pkg/reminder"
+	"go-reminder-bot/pkg/user"
 	"go-reminder-bot/pkg/xservice/ggchat"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
@@ -20,6 +21,7 @@ var Module = fx.Provide(
 	providePusher,
 	provideCronjob,
 	provideEventBus,
+	provideUserStorage,
 )
 
 func provideSqlDB() (*gorm.DB, error) {
@@ -38,8 +40,12 @@ func providePusher(ggChatSvc ggchat.Service) pusher.Pusher {
 	return pusher.NewPusher(ggChatSvc)
 }
 
-func provideServer(storage reminder.Storage, eventBus EventBus.Bus) server.Server {
-	handler := server.NewHandler(storage, eventBus)
+func provideUserStorage(db *gorm.DB) user.Storage {
+	return user.NewStorage(db)
+}
+
+func provideServer(storage reminder.Storage, userStorage user.Storage, eventBus EventBus.Bus, pusher pusher.Pusher) server.Server {
+	handler := server.NewHandler(storage, userStorage, eventBus, pusher)
 	return server.NewServer(*handler)
 }
 

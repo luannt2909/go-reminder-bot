@@ -2,10 +2,10 @@ import ReminderCreate from "./create"
 import ReminderList from "./list"
 import ReminderEdit from "./edit"
 
-const task = {
+const reminder = {
     create: ReminderCreate,
     list: ReminderList,
     edit: ReminderEdit,
 };
 
-export default task;
+export default reminder;

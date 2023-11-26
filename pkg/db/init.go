@@ -5,6 +5,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	"go-reminder-bot/pkg/enum"
 	"go-reminder-bot/pkg/reminder"
+	"go-reminder-bot/pkg/user"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"os"
@@ -38,19 +39,27 @@ func InitSQLiteDB() (*gorm.DB, error) {
 	}
 	//db = db.Debug()
 	if !isExistedDB {
-		_ = db.AutoMigrate(&reminder.Reminder{})
-		db.Create(&reminder.Reminder{
-			Name:        "Daily reminder reminder report",
-			Schedule:    "* * * * * *",
-			Message:     "report reminder please",
-			Webhook:     "webhook",
-			WebhookType: enum.WTGoogleChat,
-			IsActive:    false,
+		_ = db.AutoMigrate(&reminder.Reminder{}, &user.User{})
+		db.Create(&reminder.DefaultReminder)
+		db.Create(&user.User{
 			Model: gorm.Model{
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
-				DeletedAt: gorm.DeletedAt{},
 			},
+			Email:    "admin@reminderbot.com",
+			Password: "reminderbot",
+			Role:     enum.RoleAdmin,
+			IsActive: true,
+		})
+		db.Create(&user.User{
+			Model: gorm.Model{
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			},
+			Email:    "guest@reminderbot.com",
+			Password: "reminderbot",
+			Role:     enum.RoleGuest,
+			IsActive: true,
 		})
 	}
 	return db, nil

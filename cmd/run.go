@@ -2,20 +2,31 @@ package cmd
 
 import (
 	"context"
+	"github.com/joho/godotenv"
 	"go-reminder-bot/admin/server"
 	"go-reminder-bot/cron"
 	"go-reminder-bot/di"
 	"go.uber.org/fx"
+	"log"
 )
 
 func Execute() error {
 	app := fx.New(
+		fx.Invoke(loadEnv),
 		di.Module,
 		fx.Invoke(startCronJob),
 		fx.Invoke(startAdminServer),
 	)
 	app.Run()
 	return nil
+}
+
+func loadEnv() error {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	return err
 }
 
 func startCronJob(lc fx.Lifecycle, job cron.CronJob) {

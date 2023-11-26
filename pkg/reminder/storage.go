@@ -3,20 +3,9 @@ package reminder
 import (
 	"context"
 	"fmt"
-	"go-reminder-bot/pkg/enum"
 	"gorm.io/gorm"
 )
 
-type Reminder struct {
-	gorm.Model
-	Name        string           `json:"name" gorm:"name"`
-	Schedule    string           `json:"schedule" gorm:"schedule"`
-	Message     string           `json:"message" gorm:"message"`
-	Webhook     string           `json:"webhook" gorm:"webhook"`
-	WebhookType enum.WebhookType `json:"webhook_type" gorm:"webhook_type"`
-	Type        int32            `json:"type" gorm:"type"`
-	IsActive    bool             `json:"is_active" gorm:"is_active"`
-}
 type Storage interface {
 	Create(ctx context.Context, reminder Reminder) (Reminder, error)
 	GetList(ctx context.Context, p GetListParams) ([]Reminder, int64, error)
@@ -46,10 +35,13 @@ func (t *storage) Create(ctx context.Context, reminder Reminder) (result Reminde
 }
 
 func (t *storage) GetList(ctx context.Context, param GetListParams) (reminders []Reminder, count int64, err error) {
-	err = t.db.WithContext(ctx).Offset(param.Offset).
+	db := t.db.WithContext(ctx).Offset(param.Offset).
 		Limit(param.Limit).
-		Order(fmt.Sprintf("%s %s", param.SortBy, param.SortType)).
-		Find(&reminders).Count(&count).Error
+		Order(fmt.Sprintf("%s %s", param.SortBy, param.SortType))
+	if param.CreatedBy != nil {
+		db.Where("created_by", param.CreatedBy)
+	}
+	err = db.Find(&reminders).Count(&count).Error
 	if err != nil {
 		return
 	}

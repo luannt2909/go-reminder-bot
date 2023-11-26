@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {cloneElement} from 'react'
 import {
     List,
     Datagrid,
@@ -6,13 +6,25 @@ import {
     DateField,
     EditButton,
     DeleteButton,
-    BooleanField
+    BooleanField,
+    TopToolbar,
+    SelectColumnsButton,
+    CreateButton,
+    DatagridConfigurable
 } from 'react-admin'
-
+import TestWebhookButton from "./TestWebhookButton";
+const ListActions = ({props}) => (
+    <TopToolbar>
+        <TestWebhookButton label="Webhook Test" {...props} />
+        <CreateButton/>
+    </TopToolbar>
+);
 const ReminderList = (props) => {
     return (
-        <List {...props}>
-            <Datagrid>
+        <List {...props}
+        actions={<ListActions {...props}/>}
+        >
+            <DatagridConfigurable>
                 <TextField source='id' />
                 <TextField source='name' />
                 <BooleanField source='is_active' />
@@ -22,7 +34,7 @@ const ReminderList = (props) => {
                 <TextField source='webhook' />
                 <EditButton />
                 <DeleteButton/>
-            </Datagrid>
+            </DatagridConfigurable>
         </List>
     )
 }

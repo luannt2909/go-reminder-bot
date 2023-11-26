@@ -2,18 +2,21 @@ package server
 
 import (
 	"encoding/json"
+	"go-reminder-bot/pkg/enum"
 	"go-reminder-bot/pkg/reminder"
+	"go-reminder-bot/pkg/user"
 	"go-reminder-bot/pkg/util"
+	"time"
 )
 
-type GetListReminderRequest struct {
+type GetListRequest struct {
 	Filter map[string]interface{} `form:"filter"`
 	Range  string                 `form:"range"`
 	Sort   string                 `form:"sort"`
 }
 
-func (r GetListReminderRequest) toGetListParams() reminder.GetListParams {
-	p := reminder.GetListParams{
+func (r GetListRequest) toGetListParams() util.GetListParams {
+	p := util.GetListParams{
 		Filter:   r.Filter,
 		Limit:    10,
 		Offset:   0,
@@ -73,5 +76,32 @@ func transformReminderFromReminderDB(t reminder.Reminder) Reminder {
 		Message:     t.Message,
 		Webhook:     t.Webhook,
 		WebhookType: t.WebhookType.String(),
+	}
+}
+
+type User struct {
+	ID        int64         `json:"id"`
+	Email     string        `json:"email"`
+	IsActive  bool          `json:"is_active"`
+	Role      enum.UserRole `json:"role"`
+	CreatedAt time.Time     `json:"created_at"`
+	Token     string        `json:"token"`
+}
+
+func transformUsersFromUsersDB(users []user.User) []User {
+	result := make([]User, 0, len(users))
+	for _, user := range users {
+		result = append(result, transformUserFromUserDB(user))
+	}
+	return result
+}
+
+func transformUserFromUserDB(t user.User) User {
+	return User{
+		ID:        int64(t.Model.ID),
+		Email:     t.Email,
+		Role:      t.Role,
+		IsActive:  t.IsActive,
+		CreatedAt: t.CreatedAt,
 	}
 }

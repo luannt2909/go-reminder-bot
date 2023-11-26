@@ -7,29 +7,34 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-reminder-bot/pkg/consts"
 	"go-reminder-bot/pkg/enum"
+	"go-reminder-bot/pkg/pusher"
 	"go-reminder-bot/pkg/reminder"
+	"go-reminder-bot/pkg/user"
 	"net/http"
 	"strconv"
 )
 
 type Handler struct {
-	reminder.Storage
+	reminderStorage reminder.Storage
+	userStorage     user.Storage
+	pusher          pusher.Pusher
 	EventBus.Bus
 }
 
-func NewHandler(storage reminder.Storage, eventBus EventBus.Bus) *Handler {
-	return &Handler{storage, eventBus}
+func NewHandler(reminderStorage reminder.Storage, userStorage user.Storage, eventBus EventBus.Bus, pusher pusher.Pusher) *Handler {
+	return &Handler{reminderStorage: reminderStorage, Bus: eventBus, userStorage: userStorage, pusher: pusher}
 }
 
 func (h Handler) findReminders(c *gin.Context) {
-	var req GetListReminderRequest
+	var req GetListRequest
 	err := c.ShouldBindQuery(&req)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
+	user := ExtractUserFromCtx(c)
 	p := req.toGetListParams()
-	list, count, err := h.GetList(c, p)
+	list, count, err := h.reminderStorage.GetList(c, reminder.GetListParams{GetListParams: p, CreatedBy: &user.Email})
 	if err != nil {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -41,7 +46,7 @@ func (h Handler) findReminders(c *gin.Context) {
 func (h Handler) getOneReminder(c *gin.Context) {
 	idStr := c.Param("id")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
-	reminder, err := h.GetOne(c, id)
+	reminder, err := h.reminderStorage.GetOne(c, id)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -52,12 +57,12 @@ func (h Handler) getOneReminder(c *gin.Context) {
 func (h Handler) deleteReminder(c *gin.Context) {
 	idStr := c.Param("id")
 	id, _ := strconv.ParseInt(idStr, 10, 64)
-	reminder, err := h.GetOne(c, id)
+	reminder, err := h.reminderStorage.GetOne(c, id)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	err = h.Delete(c, id)
+	err = h.reminderStorage.Delete(c, id)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -75,7 +80,7 @@ func (h Handler) updateReminder(c *gin.Context) {
 		_ = c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	reminder, err := h.GetOne(c, id)
+	reminder, err := h.reminderStorage.GetOne(c, id)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -86,12 +91,12 @@ func (h Handler) updateReminder(c *gin.Context) {
 	reminder.Webhook = req.Webhook
 	reminder.IsActive = req.IsActive
 	reminder.WebhookType = enum.ParseWebhookType(req.WebhookType)
-	err = h.Update(c, reminder)
+	err = h.reminderStorage.Update(c, reminder)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	reminder, err = h.GetOne(c, id)
+	reminder, err = h.reminderStorage.GetOne(c, id)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -107,6 +112,7 @@ func (h Handler) createReminder(c *gin.Context) {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
+	user := ExtractUserFromCtx(c)
 	reminder := reminder.Reminder{
 		Name:        req.Name,
 		Schedule:    req.Schedule,
@@ -114,8 +120,9 @@ func (h Handler) createReminder(c *gin.Context) {
 		Message:     req.Message,
 		Webhook:     req.Webhook,
 		WebhookType: enum.ParseWebhookType(req.WebhookType),
+		CreatedBy:   user.Email,
 	}
-	reminder, err = h.Storage.Create(c, reminder)
+	reminder, err = h.reminderStorage.Create(c, reminder)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
