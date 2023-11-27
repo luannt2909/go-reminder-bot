@@ -11,7 +11,8 @@ ADD ./admin/reminder-admin /frontend
 RUN WPATH='/admin' yarn run build
 
 FROM --platform=linux/amd64 golang:alpine AS builder
-RUN apk add --no-cache git gcc g++ openssh-client build-base musl-dev
+RUN apk add --no-cache git gcc g++
+#RUN apk add --no-cache git gcc g++ openssh-client build-base musl-dev
 ADD . /go/src
 WORKDIR /go/src
 
