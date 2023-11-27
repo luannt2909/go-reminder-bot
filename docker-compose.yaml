@@ -8,4 +8,4 @@ services:
       dockerfile: ./Dockerfile
     container_name: "go-reminder-bot"
     ports:
-      - 2909:2909
+      - "2909:2909"
