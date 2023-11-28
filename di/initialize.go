@@ -22,6 +22,7 @@ var Module = fx.Provide(
 	provideEventBus,
 	provideUserStorage,
 	provideUserReminderCronJob,
+	provideReminderPusher,
 )
 
 func provideSqlDB() (*gorm.DB, error) {
@@ -40,6 +41,10 @@ func providePusher(ggChatSvc ggchat.Service) pusher.Pusher {
 	return pusher.NewPusher(ggChatSvc)
 }
 
+func provideReminderPusher(p pusher.Pusher) pusher.ReminderPusher {
+	return pusher.NewReminderPusher(p)
+}
+
 func provideUserStorage(db *gorm.DB) user.Storage {
 	return user.NewStorage(db)
 }
@@ -49,7 +54,7 @@ func provideServer(storage reminder.Storage, userStorage user.Storage, eventBus 
 	return server.NewServer(*handler)
 }
 
-func provideUserReminderCronJob(userStorage user.Storage, reminderStorage reminder.Storage, pusher pusher.Pusher, eventBus EventBus.Bus) cron.UserReminderJob {
+func provideUserReminderCronJob(userStorage user.Storage, reminderStorage reminder.Storage, pusher pusher.ReminderPusher, eventBus EventBus.Bus) cron.UserReminderJob {
 	return cron.NewUserReminderCronJob(userStorage, reminderStorage, pusher, eventBus)
 }
 

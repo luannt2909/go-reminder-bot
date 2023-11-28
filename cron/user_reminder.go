@@ -21,7 +21,7 @@ type userReminderJob struct {
 	cronJob         *cron.Cron
 	userStorage     user.Storage
 	reminderStorage reminder.Storage
-	pusher          pusher.Pusher
+	pusher          pusher.ReminderPusher
 	reminderMap     map[uint]cron.EntryID
 	subscriber      EventBus.BusSubscriber
 	syncLocker      sync.Locker
@@ -42,7 +42,7 @@ func (u *userReminderJob) Stop(ctx context.Context) {
 func NewUserReminderCronJob(
 	userStorage user.Storage,
 	reminderStorage reminder.Storage,
-	pusher pusher.Pusher,
+	pusher pusher.ReminderPusher,
 	subscriber EventBus.BusSubscriber) UserReminderJob {
 	return &userReminderJob{
 		userStorage:     userStorage,
@@ -98,6 +98,7 @@ func (u *userReminderJob) processReminderEvent(reminderID uint, event enum.Remin
 		u.deleteReminderJobByID(ctx, reminderID)
 	}
 }
+
 func (u *userReminderJob) deleteReminderJobByID(ctx context.Context, reminderID uint) {
 	if entryID, ok := u.reminderMap[reminderID]; ok {
 		u.cronJob.Remove(entryID)
@@ -150,7 +151,7 @@ func (u *userReminderJob) removeReminderMap(reminderID uint) {
 }
 
 func (u *userReminderJob) pushMessageCronFunc(r reminder.Reminder) {
-	err := u.pusher.PushMessage(context.Background(), r.WebhookType, r.Webhook, r.Message)
+	err := u.pusher.PushMessage(context.Background(), r)
 	if err != nil {
 		log.Printf("[ERROR] failed to push message to webhook: %d, url: %s, message: %s",
 			r.WebhookType, r.Webhook, r.Message)
