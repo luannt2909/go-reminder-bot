@@ -1,20 +1,21 @@
-import React, {useState, Fragment} from 'react'
+import React, {useState} from 'react'
 import IconContentSend from "@material-ui/icons/Send";
 import IconCancel from '@material-ui/icons/Cancel';
-import {Dialog, DialogActions, DialogContent, DialogContentText, Toolbar} from "@material-ui/core";
+import {Dialog, DialogContent, Toolbar} from "@material-ui/core";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import {useCreate, TextInput, SaveButton, Form, Button, SimpleForm,
-    useRefresh, SelectInput, fetchUtils} from "react-admin";
-import {required, useNotify, email } from "ra-core";
+import {Button, fetchUtils, SaveButton, SelectInput, SimpleForm, TextInput, useRefresh, useRecordContext} from "react-admin";
+import {useNotify} from "ra-core";
 import {WebhookTypes} from "./webhookType";
 
 const apiURL = import.meta.env.VITE_SIMPLE_REST_URL
 
-const WebhookTestButton = () => {
+const WebhookTestButton = ({...props}) => {
+    const {label} = props
     const [showDialog, setShowDialog] = useState(false);
     const notify = useNotify();
-    const refresh = useRefresh();
-
+    const record = useRecordContext();
+    console.log("record: ", record)
+    console.log("props: ", props)
     const handleClick = () => {
         setShowDialog(true);
     };
@@ -24,12 +25,12 @@ const WebhookTestButton = () => {
     };
 
     const handleSubmit = async values => {
-        fetchUtils.fetchJson(`${apiURL}/webhook/send`, { method: 'POST', body: JSON.stringify(values) })
+        fetchUtils.fetchJson(`${apiURL}/webhook/send`, {method: 'POST', body: JSON.stringify(values)})
             .then(() => {
                 notify('Send message successful');
             })
             .catch((e) => {
-                notify(`Error: Send message failed: ${e.message}`, { type: 'error' })
+                notify(`Error: Send message failed: ${e.message}`, {type: 'error'})
             })
             .finally(() => {
                 // setLoading(false);
@@ -38,8 +39,8 @@ const WebhookTestButton = () => {
 
     return (
         <>
-            <Button onClick={handleClick} label="Test Webhook">
-                <IconContentSend />
+            <Button onClick={handleClick} label={label}>
+                <IconContentSend/>
             </Button>
             <Dialog
                 fullWidth
@@ -55,7 +56,7 @@ const WebhookTestButton = () => {
                         onSubmit={handleSubmit}
                         // We want no toolbar at all as we have our modal actions
                         toolbar={<TestWebhookButtonToolbar onCancel={handleCloseClick}/>}
-                            >
+                    >
                         <SelectInput choices={WebhookTypes} required source='webhook_type' label='Webhook Type'/>
                         <TextInput type="url" multiline
                                    fullWidth required
@@ -69,11 +70,11 @@ const WebhookTestButton = () => {
     );
 }
 
-function TestWebhookButtonToolbar({ onCancel, ...props }) {
+function TestWebhookButtonToolbar({onCancel, ...props}) {
     return (
         <Toolbar {...props}>
-            <SaveButton icon={<IconContentSend/>} label="Send" submitOnEnter={true} />
-            <CloseButton onClick={onCancel} />
+            <SaveButton icon={<IconContentSend/>} alwaysEnable label="Send" submitOnEnter={true}/>
+            <CloseButton onClick={onCancel}/>
         </Toolbar>
     );
 }
@@ -81,7 +82,7 @@ function TestWebhookButtonToolbar({ onCancel, ...props }) {
 function CloseButton(props) {
     return (
         <Button label="Close" {...props}>
-            <IconCancel />
+            <IconCancel/>
         </Button>
     );
 }
