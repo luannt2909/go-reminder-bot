@@ -49,7 +49,6 @@ func (h Handler) deleteUser(c *gin.Context) {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	h.triggerReloadJob(c.Request.Context())
 	c.JSON(http.StatusOK, transformUserFromUserDB(user))
 }
 
@@ -79,7 +78,6 @@ func (h Handler) updateUser(c *gin.Context) {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	h.triggerReloadJob(c.Request.Context())
 	c.JSON(http.StatusOK, transformUserFromUserDB(user))
 }
 
@@ -100,6 +98,5 @@ func (h Handler) createUser(c *gin.Context) {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	h.triggerReloadJob(c.Request.Context())
 	c.JSON(http.StatusOK, transformUserFromUserDB(user))
 }

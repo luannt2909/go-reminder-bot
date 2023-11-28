@@ -13,7 +13,7 @@ const ReminderCreate = (props) => {
                            fullWidth
                            helperText="ex: Daily reminder bot"/>
 
-                <BooleanInput source='is_active'/>
+                <BooleanInput source='is_active' label='Active'/>
                 <Separator/>
 
                 <Typography variant="h6" gutterBottom>Cron Schedule Specification</Typography>
@@ -22,20 +22,20 @@ const ReminderCreate = (props) => {
                            required
                            helperText="ex: '* * * * *', '@every 5m',... "/>
                 <Separator/>
-                <Typography variant="h6" gutterBottom>Webhook infomation</Typography>
+                <Typography variant="h6" gutterBottom>Webhook information</Typography>
 
                 <Grid container >
-                    <Grid item xs={2} >
-                        <Box>
+                    <Grid item xs={6} md={2}>
+                        <Box sx={{ width: '10%' }}>
                             <SelectInput choices={WebhookTypes}
                                          required
                                          label="Webhook Type"
                                          source='webhook_type'/>
                         </Box>
                     </Grid>
-                    <Grid item xs={10} >
-                        <Box>
-                            <TextInput sx={{pl: 1}} multiline fullWidth required source='webhook' label="Webhook URL"/>
+                    <Grid item xs={12} md={10}>
+                        <Box >
+                            <TextInput fullWidth required source='webhook' label="Webhook URL"/>
                         </Box>
                     </Grid>
                 </Grid>

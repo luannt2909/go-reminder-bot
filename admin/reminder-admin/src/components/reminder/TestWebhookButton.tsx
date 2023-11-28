@@ -47,7 +47,7 @@ const WebhookTestButton = () => {
                 onClose={handleCloseClick}
                 aria-label="Test Webhook"
             >
-                <DialogTitle>Send Message Through Webhook</DialogTitle>
+                <DialogTitle>Send Message To Webhook</DialogTitle>
                 <DialogContent>
                     <SimpleForm
                         resource="webhook"
@@ -56,8 +56,10 @@ const WebhookTestButton = () => {
                         // We want no toolbar at all as we have our modal actions
                         toolbar={<TestWebhookButtonToolbar onCancel={handleCloseClick}/>}
                             >
-                        <SelectInput choices={WebhookTypes} required source='webhook_type'/>
-                        <TextInput type="url" multiline fullWidth required source='webhook'/>
+                        <SelectInput choices={WebhookTypes} required source='webhook_type' label='Webhook Type'/>
+                        <TextInput type="url" multiline
+                                   fullWidth required
+                                   source='webhook' label='Webhook URL'/>
                         <TextInput multiline fullWidth required source='message'/>
                     </SimpleForm>
 

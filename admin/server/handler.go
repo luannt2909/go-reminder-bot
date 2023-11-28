@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"fmt"
 	"github.com/asaskevich/EventBus"
 	"github.com/gin-gonic/gin"
@@ -67,7 +66,7 @@ func (h Handler) deleteReminder(c *gin.Context) {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	h.triggerReloadJob(c.Request.Context())
+	h.triggerReloadJob(reminder.ID, enum.REDelete)
 	c.JSON(http.StatusOK, transformReminderFromReminderDB(reminder))
 }
 
@@ -101,7 +100,7 @@ func (h Handler) updateReminder(c *gin.Context) {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	h.triggerReloadJob(c.Request.Context())
+	h.triggerReloadJob(reminder.ID, enum.REUpdate)
 	c.JSON(http.StatusOK, transformReminderFromReminderDB(reminder))
 }
 
@@ -127,10 +126,10 @@ func (h Handler) createReminder(c *gin.Context) {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
-	h.triggerReloadJob(c.Request.Context())
+	h.triggerReloadJob(reminder.ID, enum.RECreate)
 	c.JSON(http.StatusOK, transformReminderFromReminderDB(reminder))
 }
 
-func (h Handler) triggerReloadJob(ctx context.Context) {
-	go h.Bus.Publish(consts.ReminderEventBusTopic, context.Background())
+func (h Handler) triggerReloadJob(reminderID uint, event enum.ReminderEvent) {
+	go h.Bus.Publish(consts.ReminderEventBusTopic, reminderID, event)
 }

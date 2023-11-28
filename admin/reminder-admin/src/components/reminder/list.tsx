@@ -27,11 +27,11 @@ const ReminderList = (props) => {
             <DatagridConfigurable>
                 <TextField source='id' />
                 <TextField source='name' />
-                <BooleanField source='is_active' />
+                <BooleanField source='is_active' label='Active' />
                 <TextField source='schedule' />
                 <TextField source='next_time' />
                 <TextField source='webhook_type' />
-                <TextField source='webhook' />
+                <TextField source='webhook' label='Webhook URL'/>
                 <EditButton />
                 <DeleteButton/>
             </DatagridConfigurable>
