@@ -1,3 +1,6 @@
 package consts
 
-const ReminderEventBusTopic = "reminder:reload"
+const (
+	ReminderEventBusTopic = "reminder:event"
+	UserEventBusTopic     = "user:%d:update"
+)

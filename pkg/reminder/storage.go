@@ -13,10 +13,21 @@ type Storage interface {
 	Delete(ctx context.Context, id int64) error
 	Update(ctx context.Context, reminder Reminder) error
 	GetActiveReminder(ctx context.Context) ([]Reminder, error)
+	GetActiveRemindersByUsers(ctx context.Context, emails []string) ([]Reminder, error)
 }
 
 type storage struct {
 	db *gorm.DB
+}
+
+func (t *storage) GetActiveRemindersByUsers(ctx context.Context, emails []string) (reminders []Reminder, err error) {
+	err = t.db.WithContext(ctx).
+		Where("is_active = ? AND created_by IN ?", true, emails).
+		Find(&reminders).Error
+	if err != nil {
+		return
+	}
+	return
 }
 
 func (t *storage) Update(ctx context.Context, reminder Reminder) (err error) {
@@ -60,7 +71,6 @@ func (t *storage) GetActiveReminder(ctx context.Context) (reminders []Reminder, 
 
 func (t *storage) GetOne(ctx context.Context, id int64) (reminder Reminder, err error) {
 	err = t.db.WithContext(ctx).First(&reminder, id).Error
-	fmt.Println(err)
 	return
 }
 

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"go-reminder-bot/pkg/enum"
+	"go-reminder-bot/pkg/reminder"
 	"gorm.io/gorm"
 	"time"
 )
@@ -13,10 +14,11 @@ var ErrNotFound = errors.New("user not found")
 
 type User struct {
 	gorm.Model
-	Email    string        `json:"email" gorm:"email"`
-	Password string        `json:"password" gorm:"password"`
-	Role     enum.UserRole `json:"role" gorm:"role"`
-	IsActive bool          `json:"is_active" gorm:"is_active"`
+	Email     string              `json:"email" gorm:"email"`
+	Password  string              `json:"password" gorm:"password"`
+	Role      enum.UserRole       `json:"role" gorm:"role"`
+	IsActive  bool                `json:"is_active" gorm:"is_active"`
+	Reminders []reminder.Reminder `gorm:"foreignKey:created_by"`
 }
 
 func NewUser(email, password string) User {
@@ -40,6 +42,7 @@ type Storage interface {
 	Delete(ctx context.Context, id int64) error
 	Update(ctx context.Context, user User) error
 	Authenticate(ctx context.Context, email, password string) (User, error)
+	GetActiveUsers(ctx context.Context) ([]User, error)
 }
 
 type storage struct {
@@ -90,9 +93,10 @@ func (t *storage) GetList(ctx context.Context, param GetListParams) (users []Use
 	return
 }
 
-func (t *storage) GetActiveUser(ctx context.Context) (users []User, err error) {
+func (t *storage) GetActiveUsers(ctx context.Context) (users []User, err error) {
 	err = t.db.WithContext(ctx).
 		Where("is_active", true).
+		Preload("Reminders").
 		Find(&users).Error
 	if err != nil {
 		return

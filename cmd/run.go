@@ -29,7 +29,7 @@ func loadEnv() error {
 	return err
 }
 
-func startCronJob(lc fx.Lifecycle, job cron.CronJob) {
+func startCronJob(lc fx.Lifecycle, job cron.UserReminderJob) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			job.Start(ctx)
