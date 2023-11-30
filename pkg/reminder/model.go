@@ -13,9 +13,8 @@ type Reminder struct {
 	Message     string           `json:"message" gorm:"message"`
 	Webhook     string           `json:"webhook" gorm:"webhook"`
 	WebhookType enum.WebhookType `json:"webhook_type" gorm:"webhook_type"`
-	Type        int32            `json:"type" gorm:"type"`
 	IsActive    bool             `json:"is_active" gorm:"is_active"`
-	CreatedBy   string           `json:"created_by" gorm:"created_by"`
+	CreatedBy   string           `json:"created_by" gorm:"created_by;size:256;index"`
 }
 
 var DefaultReminder = Reminder{

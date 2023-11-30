@@ -14,11 +14,11 @@ var ErrNotFound = errors.New("user not found")
 
 type User struct {
 	gorm.Model
-	Email     string              `json:"email" gorm:"email"`
-	Password  string              `json:"password" gorm:"password"`
+	Email     string              `json:"email" gorm:"email;size:256;uniqueIndex"`
+	Password  string              `json:"-" gorm:"password"`
 	Role      enum.UserRole       `json:"role" gorm:"role"`
 	IsActive  bool                `json:"is_active" gorm:"is_active"`
-	Reminders []reminder.Reminder `gorm:"foreignKey:created_by"`
+	Reminders []reminder.Reminder `gorm:"foreignKey:CreatedBy;references:Email"`
 }
 
 func NewUser(email, password string) User {

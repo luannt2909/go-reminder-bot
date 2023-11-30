@@ -24,9 +24,9 @@ const ReminderCreate = (props) => {
                 <Separator/>
                 <Typography variant="h6" gutterBottom>Webhook information</Typography>
 
-                <Grid container >
+                <Grid container>
                     <Grid item xs={6} md={2}>
-                        <Box sx={{ width: '10%' }}>
+                        <Box sx={{width: '10%'}}>
                             <SelectInput choices={WebhookTypes}
                                          required
                                          label="Webhook Type"
@@ -34,7 +34,7 @@ const ReminderCreate = (props) => {
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={10}>
-                        <Box >
+                        <Box>
                             <TextInput fullWidth required source='webhook' label="Webhook URL"/>
                         </Box>
                     </Grid>

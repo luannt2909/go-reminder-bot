@@ -11,15 +11,16 @@ type Server interface {
 	Stop(ctx context.Context)
 }
 type server struct {
-	handler Handler
+	handler     Handler
+	authHandler gin.HandlerFunc
 }
 
 func (s server) Stop(ctx context.Context) {
 	//TODO implement me
 }
 
-func NewServer(handler Handler) Server {
-	return &server{handler: handler}
+func NewServer(handler Handler, authHandler gin.HandlerFunc) Server {
+	return &server{handler: handler, authHandler: authHandler}
 }
 
 func (s server) Start(ctx context.Context) {
@@ -42,10 +43,10 @@ func (s server) Start(ctx context.Context) {
 	authG := r.Group("/auth")
 	{
 		authG.POST("/authenticate", h.Login)
-		authG.POST("/logout", AuthenticateUser)
+		authG.POST("/logout", s.authHandler, h.Logout)
 	}
 
-	authGroup := r.Group("", AuthenticateUser)
+	authGroup := r.Group("", s.authHandler)
 	reminderG := authGroup.Group("/reminders")
 	{
 		reminderG.GET("", h.findReminders)

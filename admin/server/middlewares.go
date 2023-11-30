@@ -2,66 +2,59 @@ package server
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
+	"go-reminder-bot/pkg/token"
+	"go-reminder-bot/pkg/user"
 	"log"
 	"net/http"
-	"os"
 	"strings"
+	"time"
 )
 
 const (
 	UserKey             = "user"
 	AuthorizationHeader = "Authorization"
+	ExpireDuration      = 24 * time.Hour
 )
 
-func AuthenticateUser(c *gin.Context) {
-	tokenBearer := c.GetHeader(AuthorizationHeader)
-	splitToken := strings.Split(tokenBearer, "Bearer ")
-	var tokenStr string
-	if len(splitToken) == 2 {
-		tokenStr = splitToken[1]
-	}
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-		// Don't forget to validate the alg is what you expect:
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+func AuthenticateUserHandler(tokenizer token.Tokenizer, userStorage user.Storage) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokenBearer := c.GetHeader(AuthorizationHeader)
+		splitToken := strings.Split(tokenBearer, "Bearer ")
+		var tokenStr string
+		if len(splitToken) == 2 {
+			tokenStr = splitToken[1]
 		}
-
-		// hmacSampleSecret is a []byte containing your secret, e.g. []byte("my_secret_key")
-		return []byte(os.Getenv("JWT_SIGNING_KEY")), nil
-	})
-	if err != nil {
-		log.Println(err)
-		c.AbortWithStatus(http.StatusForbidden)
-		return
-	}
-
-	if claims, ok := token.Claims.(jwt.MapClaims); ok {
-		userClaim := claims["user"]
-		var user User
-		_ = ParseJson(userClaim, &user)
-		c.Set(UserKey, user)
-		ctx := context.WithValue(c.Request.Context(), UserKey, user)
+		claim, err := tokenizer.Parse(tokenStr)
+		if err != nil {
+			log.Println(err)
+			c.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+		log.Println("Claim: ", claim)
+		if time.Unix(claim.IssuedAt, 0).Add(ExpireDuration).Before(time.Now()) {
+			c.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+		u, err := userStorage.GetOne(c, int64(claim.UserID))
+		if err != nil {
+			c.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+		if !u.IsActive {
+			c.AbortWithStatus(http.StatusForbidden)
+			return
+		}
+		c.Set(UserKey, u)
+		ctx := context.WithValue(c.Request.Context(), UserKey, u)
 		c.Request.WithContext(ctx)
+		c.Next()
 	}
-	c.Next()
 }
 
-func ParseJson(data, target interface{}) error {
-	dataBytes, err := json.Marshal(data)
-	if err != nil {
-		return err
-	}
-	err = json.Unmarshal(dataBytes, &target)
-	return err
-}
-
-func ExtractUserFromCtx(c *gin.Context) User {
+func ExtractUserFromCtx(c *gin.Context) user.User {
 	if u, existed := c.Get(UserKey); existed {
-		return u.(User)
+		return u.(user.User)
 	}
-	return User{}
+	return user.User{}
 }

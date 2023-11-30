@@ -74,7 +74,7 @@ function TestWebhookButtonToolbar({onCancel, ...props}) {
     return (
         <Toolbar {...props}>
             <SaveButton icon={<IconContentSend/>} alwaysEnable label="Send" submitOnEnter={true}/>
-            <CloseButton onClick={onCancel}/>
+            <CloseButton size='large' color='secondary' sx={{ml:1}} onClick={onCancel}/>
         </Toolbar>
     );
 }

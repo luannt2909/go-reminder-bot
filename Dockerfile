@@ -23,7 +23,7 @@ FROM scratch
 WORKDIR /root/
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /go/src .
-COPY --from=frontend /frontend/dist ./admin/reminder-admin/dist/
+#COPY --from=frontend /frontend/dist ./admin/reminder-admin/dist/
 COPY --from=builder /usr/local/go/lib/time/zoneinfo.zip /usr/local/go/lib/time/
 
 EXPOSE 2909

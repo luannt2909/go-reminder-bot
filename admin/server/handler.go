@@ -8,6 +8,7 @@ import (
 	"go-reminder-bot/pkg/enum"
 	"go-reminder-bot/pkg/pusher"
 	"go-reminder-bot/pkg/reminder"
+	"go-reminder-bot/pkg/token"
 	"go-reminder-bot/pkg/user"
 	"net/http"
 	"strconv"
@@ -18,10 +19,11 @@ type Handler struct {
 	userStorage     user.Storage
 	pusher          pusher.Pusher
 	EventBus.Bus
+	tokenizer token.Tokenizer
 }
 
-func NewHandler(reminderStorage reminder.Storage, userStorage user.Storage, eventBus EventBus.Bus, pusher pusher.Pusher) *Handler {
-	return &Handler{reminderStorage: reminderStorage, Bus: eventBus, userStorage: userStorage, pusher: pusher}
+func NewHandler(reminderStorage reminder.Storage, userStorage user.Storage, eventBus EventBus.Bus, pusher pusher.Pusher, tokenizer token.Tokenizer) *Handler {
+	return &Handler{reminderStorage: reminderStorage, Bus: eventBus, userStorage: userStorage, pusher: pusher, tokenizer: tokenizer}
 }
 
 func (h Handler) findReminders(c *gin.Context) {

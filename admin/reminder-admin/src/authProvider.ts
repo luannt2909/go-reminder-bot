@@ -61,9 +61,17 @@ export const authProvider: AuthProvider = {
   },
   logout: () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     return Promise.resolve();
   },
-  checkError: () => Promise.resolve(),
+  checkError: (error) => {
+    const status = error.status;
+    if (status === 401 || status === 403) {
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
+      return Promise.reject();
+    }
+  },
   checkAuth: () =>
     localStorage.getItem("user") ? Promise.resolve() : Promise.reject(),
   getPermissions: () => {

@@ -4,9 +4,11 @@ import (
 	"github.com/asaskevich/EventBus"
 	"go-reminder-bot/admin/server"
 	"go-reminder-bot/cron"
+	"go-reminder-bot/pkg/config"
 	"go-reminder-bot/pkg/db"
 	"go-reminder-bot/pkg/pusher"
 	"go-reminder-bot/pkg/reminder"
+	"go-reminder-bot/pkg/token"
 	"go-reminder-bot/pkg/user"
 	"go-reminder-bot/pkg/xservice/ggchat"
 	"go.uber.org/fx"
@@ -14,19 +16,24 @@ import (
 )
 
 var Module = fx.Provide(
-	provideSqlDB,
+	provideConfig,
+	provideDB,
 	provideReminderStorage,
 	provideServer,
 	provideGGChatService,
 	providePusher,
 	provideEventBus,
+	provideTokenizer,
 	provideUserStorage,
 	provideUserReminderCronJob,
 	provideReminderPusher,
 )
 
-func provideSqlDB() (*gorm.DB, error) {
-	return db.InitSQLiteDB()
+func provideConfig() (config.Config, error) {
+	return config.LoadEnv()
+}
+func provideDB(cfg config.Config) (*gorm.DB, error) {
+	return db.InitDatabase(cfg.DBConfig)
 }
 
 func provideReminderStorage(db *gorm.DB) reminder.Storage {
@@ -49,9 +56,10 @@ func provideUserStorage(db *gorm.DB) user.Storage {
 	return user.NewStorage(db)
 }
 
-func provideServer(storage reminder.Storage, userStorage user.Storage, eventBus EventBus.Bus, pusher pusher.Pusher) server.Server {
-	handler := server.NewHandler(storage, userStorage, eventBus, pusher)
-	return server.NewServer(*handler)
+func provideServer(storage reminder.Storage, userStorage user.Storage, eventBus EventBus.Bus,
+	pusher pusher.Pusher, tokenizer token.Tokenizer) server.Server {
+	handler := server.NewHandler(storage, userStorage, eventBus, pusher, tokenizer)
+	return server.NewServer(*handler, server.AuthenticateUserHandler(tokenizer, userStorage))
 }
 
 func provideUserReminderCronJob(userStorage user.Storage, reminderStorage reminder.Storage, pusher pusher.ReminderPusher, eventBus EventBus.Bus) cron.UserReminderJob {
@@ -60,4 +68,8 @@ func provideUserReminderCronJob(userStorage user.Storage, reminderStorage remind
 
 func provideEventBus() EventBus.Bus {
 	return EventBus.New()
+}
+
+func provideTokenizer(cfg config.Config) token.Tokenizer {
+	return token.NewJwtTokenizer([]byte(cfg.JwtSigningKey))
 }
