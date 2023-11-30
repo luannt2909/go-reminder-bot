@@ -40,30 +40,45 @@ func InitSQLiteDB() (*gorm.DB, error) {
 		fmt.Println(err)
 		return nil, err
 	}
-	//db = db.Debug()
 	if !isExistedDB {
 		_ = db.AutoMigrate(&reminder.Reminder{}, &user.User{})
-		db.Create(&reminder.DefaultReminder)
+		adminEmail := "admin@reminderbot.com"
+		adminPwd := os.Getenv("DEFAULT_ADMIN_PASSWORD")
+		if adminPwd == "" {
+			adminPwd = "reminderbot"
+		}
 		db.Create(&user.User{
 			Model: gorm.Model{
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			},
-			Email:    "admin@reminderbot.com",
-			Password: "reminderbot",
+			Email:    adminEmail,
+			Password: adminPwd,
 			Role:     enum.RoleAdmin,
 			IsActive: true,
 		})
+		adminReminder := reminder.DefaultReminder
+		adminReminder.CreatedBy = adminEmail
+		db.Create(&adminReminder)
+
+		guestEmail := "guest@reminderbot.com"
+		guestPwd := os.Getenv("DEFAULT_GUEST_PASSWORD")
+		if guestPwd == "" {
+			guestPwd = "reminderbot"
+		}
 		db.Create(&user.User{
 			Model: gorm.Model{
 				CreatedAt: time.Now(),
 				UpdatedAt: time.Now(),
 			},
-			Email:    "guest@reminderbot.com",
-			Password: "reminderbot",
+			Email:    guestEmail,
+			Password: guestPwd,
 			Role:     enum.RoleGuest,
 			IsActive: true,
 		})
+		guestReminder := reminder.DefaultReminder
+		guestReminder.CreatedBy = guestEmail
+		db.Create(&guestReminder)
 	}
 	return db, nil
 }

@@ -13,7 +13,7 @@ type DBConfig struct {
 type Config struct {
 	DBConfig
 	Port          string `env:"PORT" envDefault:"2909"`
-	JwtSigningKey string `env:"JWT_SIGNING_KEY"`
+	JwtSigningKey string `env:"JWT_SIGNING_KEY" envDefault:"CSwS88WnQjKGBAEI"`
 }
 
 func LoadEnv() (cfg Config, err error) {
