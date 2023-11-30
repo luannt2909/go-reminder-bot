@@ -1,3 +1,4 @@
 # react
 **/node_modules/
 .git
+.env
