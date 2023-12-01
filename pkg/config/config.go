@@ -2,7 +2,9 @@ package config
 
 import (
 	"github.com/caarlos0/env/v10"
+	"github.com/joho/godotenv"
 	"log"
+	"os"
 )
 
 type DBConfig struct {
@@ -21,6 +23,24 @@ func LoadEnv() (cfg Config, err error) {
 	if err != nil {
 		log.Printf("failed to config load from ENV: %s", err)
 		return
+	}
+	log.Printf("config load from ENV: %+v", cfg)
+	return
+}
+
+func LoadEnvFromFile() (cfg Config, err error) {
+	err = godotenv.Load()
+	if err != nil {
+		log.Printf("failed to config load from ENV: %s", err)
+		return
+	}
+	cfg = Config{
+		DBConfig: DBConfig{
+			DBClient:        os.Getenv("DB_CLIENT"),
+			DBConnectionURI: os.Getenv("DB_CONNECTION_URI"),
+		},
+		Port:          os.Getenv("PORT"),
+		JwtSigningKey: os.Getenv("JWT_SIGNING_KEY"),
 	}
 	log.Printf("config load from ENV: %+v", cfg)
 	return

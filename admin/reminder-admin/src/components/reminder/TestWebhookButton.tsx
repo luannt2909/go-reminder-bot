@@ -3,9 +3,10 @@ import IconContentSend from "@material-ui/icons/Send";
 import IconCancel from '@material-ui/icons/Cancel';
 import {Dialog, DialogContent, Toolbar} from "@material-ui/core";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import {Button, fetchUtils, SaveButton, SelectInput, SimpleForm, TextInput, useRefresh, useRecordContext} from "react-admin";
+import {Button, fetchUtils, SaveButton, SelectInput, SimpleForm, TextInput} from "react-admin";
 import {useNotify} from "ra-core";
 import {WebhookTypes} from "./webhookType";
+import {retrieveToken} from "../../authProvider";
 
 const apiURL = import.meta.env.VITE_SIMPLE_REST_URL
 
@@ -13,9 +14,6 @@ const WebhookTestButton = ({...props}) => {
     const {label} = props
     const [showDialog, setShowDialog] = useState(false);
     const notify = useNotify();
-    const record = useRecordContext();
-    console.log("record: ", record)
-    console.log("props: ", props)
     const handleClick = () => {
         setShowDialog(true);
     };
@@ -25,7 +23,15 @@ const WebhookTestButton = ({...props}) => {
     };
 
     const handleSubmit = async values => {
-        fetchUtils.fetchJson(`${apiURL}/webhook/send`, {method: 'POST', body: JSON.stringify(values)})
+        const token = retrieveToken()
+        let options = {
+            method: 'POST',
+            body: JSON.stringify(values),
+            user: {
+                authenticated: true,
+                token: `Bearer ${token}`
+            }}
+        fetchUtils.fetchJson(`${apiURL}/webhook/send`, options)
             .then(() => {
                 notify('Send message successful');
             })
@@ -74,7 +80,7 @@ function TestWebhookButtonToolbar({onCancel, ...props}) {
     return (
         <Toolbar {...props}>
             <SaveButton icon={<IconContentSend/>} alwaysEnable label="Send" submitOnEnter={true}/>
-            <CloseButton size='large' color='secondary' sx={{ml:1}} onClick={onCancel}/>
+            <CloseButton size='large' color='secondary' sx={{ml: 1}} onClick={onCancel}/>
         </Toolbar>
     );
 }
