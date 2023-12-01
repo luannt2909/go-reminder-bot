@@ -36,7 +36,7 @@ func (s server) Start(ctx context.Context) {
 		MaxAge:           86400,
 	}))
 	r := g.Group("/api/v1")
-	webhookG := r.Group("/webhook")
+	webhookG := r.Group("/webhook", s.authHandler)
 	{
 		webhookG.POST("/send", h.SendMessage)
 	}

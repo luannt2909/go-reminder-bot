@@ -15,17 +15,17 @@ type reminderPusher struct {
 	pusher Pusher
 }
 
-const ggChatMsgFooter = `
+const GGChatMsgFooter = `
 ================
 Sent by: *%s*
-Powered by: <https://luciannguyen.blog|reminder-bot.com>
+Powered by: <https://reminderbot.luciannguyen.blog/admin|reminder-bot.com>
 `
 
 func (p reminderPusher) PushMessage(ctx context.Context, r reminder.Reminder) error {
 	switch r.WebhookType {
 	case enum.WTGoogleChat:
 		body := r.Message
-		footer := fmt.Sprintf(ggChatMsgFooter, r.CreatedBy)
+		footer := fmt.Sprintf(GGChatMsgFooter, r.CreatedBy)
 		message := fmt.Sprint(body, footer)
 		return p.pusher.PushMessage(ctx, enum.WTGoogleChat, r.Webhook, message)
 	}
