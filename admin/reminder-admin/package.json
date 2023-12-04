@@ -1,5 +1,5 @@
 {
-  "name": "task-admin",
+  "name": "reminder-bot-admin",
   "private": true,
   "scripts": {
     "dev": "vite",

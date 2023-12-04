@@ -1,7 +1,6 @@
 import React from 'react'
 import {
     BooleanField,
-    Button,
     CreateButton,
     DatagridConfigurable,
     DeleteButton,
@@ -10,26 +9,15 @@ import {
     TextField,
     TopToolbar,
 } from 'react-admin'
-import {Link} from 'react-router-dom';
-import IconGithub from '@material-ui/icons/Github';
 import TestWebhookButton from "./TestWebhookButton";
-
-const SourceCodeURL = "https://github.com/luannt2909/go-reminder-bot"
-
-function ContributeButton({label}) {
-    return <Link to={SourceCodeURL}>
-        <Button label={label}>
-            <IconGithub/>
-        </Button>
-    </Link>;
-}
+import ContributeButton from "./ContributeButton";
 
 // Usage
 const ListActions = ({props}) => (
     <TopToolbar>
         <TestWebhookButton label="Webhook Test" {...props} />
         <CreateButton/>
-        <ContributeButton label="Contribute"/>
+        <ContributeButton/>
     </TopToolbar>
 );
 const ReminderList = (props) => {

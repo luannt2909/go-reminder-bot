@@ -33,7 +33,6 @@ var Module = fx.Provide(
 
 func provideConfig() (config.Config, error) {
 	return config.LoadEnv()
-	//return config.LoadEnvFromFile()
 }
 func provideDB(cfg config.Config) (*gorm.DB, error) {
 	return db.InitDatabase(cfg.DBConfig)
