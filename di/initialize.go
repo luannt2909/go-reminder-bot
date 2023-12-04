@@ -11,6 +11,7 @@ import (
 	"go-reminder-bot/pkg/token"
 	"go-reminder-bot/pkg/user"
 	"go-reminder-bot/pkg/xservice/ggchat"
+	"go-reminder-bot/pkg/xservice/msteams"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
 )
@@ -21,6 +22,7 @@ var Module = fx.Provide(
 	provideReminderStorage,
 	provideServer,
 	provideGGChatService,
+	provideMSTeamsService,
 	providePusher,
 	provideEventBus,
 	provideTokenizer,
@@ -31,6 +33,7 @@ var Module = fx.Provide(
 
 func provideConfig() (config.Config, error) {
 	return config.LoadEnv()
+	//return config.LoadEnvFromFile()
 }
 func provideDB(cfg config.Config) (*gorm.DB, error) {
 	return db.InitDatabase(cfg.DBConfig)
@@ -44,8 +47,12 @@ func provideGGChatService() ggchat.Service {
 	return ggchat.NewService()
 }
 
-func providePusher(ggChatSvc ggchat.Service) pusher.Pusher {
-	return pusher.NewPusher(ggChatSvc)
+func provideMSTeamsService() msteams.Service {
+	return msteams.NewService()
+}
+
+func providePusher(ggChatSvc ggchat.Service, msTeamsSvc msteams.Service) pusher.Pusher {
+	return pusher.NewPusher(ggChatSvc, msTeamsSvc)
 }
 
 func provideReminderPusher(p pusher.Pusher) pusher.ReminderPusher {
