@@ -24,19 +24,35 @@ func (h Handler) Login(c *gin.Context) {
 		return
 	}
 	passwordHash := util.Hash256(req.Password)
-	u, err := h.userStorage.Authenticate(ctx, req.Username, passwordHash)
-	if err != nil && !errors.Is(err, user.ErrNotFound) {
-		_ = c.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-	if errors.Is(err, user.ErrNotFound) {
-		u, err = h.registerUser(c, req.Username, passwordHash)
-		if err != nil {
+	u, err := h.userStorage.GetByEmail(ctx, req.Username)
+	if err != nil {
+		if errors.Is(err, user.ErrNotFound) {
+			u, err = h.registerUser(c, req.Username, passwordHash)
+			if err != nil {
+				_ = c.AbortWithError(http.StatusInternalServerError, err)
+				return
+			}
+		} else {
 			_ = c.AbortWithError(http.StatusInternalServerError, err)
 			return
 		}
 	}
-
+	if u.Password != passwordHash {
+		// TODO: migrate new hash password
+		if req.Password != u.Password {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "password is incorrect",
+			})
+			return
+		}
+		go h.userStorage.UpdateNewPassword(context.Background(), u.ID, passwordHash)
+	}
+	if !u.IsActive {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "account is inactive",
+		})
+		return
+	}
 	claim := token.Claim{
 		UserID:    u.ID,
 		UserEmail: u.Email,
