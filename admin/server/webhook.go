@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"go-reminder-bot/pkg/enum"
 	"go-reminder-bot/pkg/pusher"
@@ -22,8 +21,8 @@ func (h Handler) SendMessage(c *gin.Context) {
 	}
 
 	user := ExtractUserFromCtx(c)
-	footer := fmt.Sprintf(pusher.GGChatMsgFooter, user.Email)
-	message := fmt.Sprint(req.Message, footer)
+	whType := enum.ParseWebhookType(req.WebhookType)
+	message := pusher.InjectFooter(whType, user.Email, req.Message)
 	err = h.pusher.PushMessage(ctx, enum.ParseWebhookType(req.WebhookType), req.Webhook, message)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
