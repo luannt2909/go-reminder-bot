@@ -38,7 +38,11 @@ func (h Handler) findReminders(c *gin.Context) {
 	}
 	user := ExtractUserFromCtx(c)
 	p := req.toGetListParams()
-	list, count, err := h.reminderStorage.GetList(c, reminder.GetListParams{GetListParams: p, CreatedBy: &user.Email})
+	reminderParams := reminder.GetListParams{GetListParams: p}
+	if user.Role != enum.RoleAdmin {
+		reminderParams.CreatedBy = &user.Email
+	}
+	list, count, err := h.reminderStorage.GetList(c, reminderParams)
 	if err != nil {
 		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
