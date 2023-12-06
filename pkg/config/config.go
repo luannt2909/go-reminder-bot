@@ -3,8 +3,8 @@ package config
 import (
 	"github.com/caarlos0/env/v10"
 	"github.com/joho/godotenv"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cast"
-	"log"
 	"os"
 )
 

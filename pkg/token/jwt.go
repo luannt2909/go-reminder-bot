@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
-	"log"
 	"time"
 )
 
@@ -22,7 +21,6 @@ func (j *jwtTokenizer) Generate(claim Claim) (tokenString string, err error) {
 		"claim": claim,
 		"iat":   time.Now(),
 	})
-	log.Println("Claim generate ", claim)
 	tokenString, err = token.SignedString(j.signingKey)
 	return
 }

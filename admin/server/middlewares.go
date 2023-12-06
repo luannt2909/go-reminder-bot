@@ -3,9 +3,9 @@ package server
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 	"go-reminder-bot/pkg/token"
 	"go-reminder-bot/pkg/user"
-	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -27,7 +27,7 @@ func AuthenticateUserHandler(tokenizer token.Tokenizer, userStorage user.Storage
 		}
 		claim, err := tokenizer.Parse(tokenStr)
 		if err != nil {
-			log.Println(err)
+			log.Err(err).Msg("failed to parse token")
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}

@@ -4,12 +4,12 @@ import (
 	"context"
 	"github.com/asaskevich/EventBus"
 	"github.com/robfig/cron/v3"
+	"github.com/rs/zerolog/log"
 	"go-reminder-bot/pkg/consts"
 	"go-reminder-bot/pkg/enum"
 	"go-reminder-bot/pkg/pusher"
 	"go-reminder-bot/pkg/reminder"
 	"go-reminder-bot/pkg/user"
-	"log"
 	"sync"
 )
 
@@ -34,7 +34,7 @@ func (u *userReminderJob) Stop(ctx context.Context) {
 	if u.subscriber != nil {
 		err := u.subscriber.Unsubscribe(consts.ReminderEventBusTopic, u.processReminderEvent)
 		if err != nil {
-			log.Println("failed to unsubscribe reminder event: ", err)
+			log.Err(err).Msg("failed to unsubscribe reminder event")
 		}
 	}
 }
@@ -125,14 +125,14 @@ func (u *userReminderJob) addReminderJobByID(ctx context.Context, reminderID uin
 }
 func (u *userReminderJob) addReminderJob(ctx context.Context, r reminder.Reminder) {
 	if !r.IsActive {
-		log.Println("reminder is not active, skipping... ", r.ID)
+		log.Warn().Msgf("reminder is not active, skipping... ", r.ID)
 		return
 	}
 	entryID, err := u.cronJob.AddFunc(r.Schedule, func() {
 		u.pushMessageCronFunc(r)
 	})
 	if err != nil {
-		log.Println("[ERROR] failed to add reminder job: ", r, "error", err)
+		log.Err(err).Msgf("[ERROR] failed to add reminder job: ", r)
 		return
 	}
 	u.setReminderMap(r.ID, entryID)

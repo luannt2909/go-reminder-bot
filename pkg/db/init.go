@@ -10,7 +10,6 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
-	"log"
 	"os"
 	"time"
 )
@@ -84,7 +83,6 @@ func InitSQLiteDB() (*gorm.DB, error) {
 }
 
 func InitDatabase(cfg config.DBConfig) (db *gorm.DB, err error) {
-	log.Println("config", cfg)
 	db, err = initDB(cfg)
 	if err != nil {
 		return
