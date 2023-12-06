@@ -12,6 +12,7 @@ import (
 	"go-reminder-bot/pkg/user"
 	"go-reminder-bot/pkg/xservice/ggchat"
 	"go-reminder-bot/pkg/xservice/msteams"
+	"go-reminder-bot/pkg/xservice/slacksvc"
 	"go.uber.org/fx"
 	"gorm.io/gorm"
 )
@@ -23,6 +24,7 @@ var Module = fx.Provide(
 	provideServer,
 	provideGGChatService,
 	provideMSTeamsService,
+	provideSlackService,
 	providePusher,
 	provideEventBus,
 	provideTokenizer,
@@ -50,8 +52,12 @@ func provideMSTeamsService() msteams.Service {
 	return msteams.NewService()
 }
 
-func providePusher(ggChatSvc ggchat.Service, msTeamsSvc msteams.Service) pusher.Pusher {
-	return pusher.NewPusher(ggChatSvc, msTeamsSvc)
+func provideSlackService() slacksvc.Service {
+	return slacksvc.NewService()
+}
+
+func providePusher(ggChatSvc ggchat.Service, msTeamsSvc msteams.Service, slackSvc slacksvc.Service) pusher.Pusher {
+	return pusher.NewPusher(ggChatSvc, msTeamsSvc, slackSvc)
 }
 
 func provideReminderPusher(p pusher.Pusher) pusher.ReminderPusher {
