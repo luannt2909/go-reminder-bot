@@ -7,7 +7,7 @@ Reminder Bot is a simple Go cronjob with admin UI to set up reminder
 - supports the UI for setting up reminders with human-readable
 - Manage reminders with an account that is sign-up-free
 ## Demo:
-Visit [Simple Reminder Bot](https://reminderbot.luciannguyen.blog/admin/#/reminders) to set up reminder and explore more
+Visit [Simple Reminder Bot](https://reminderbot.luciango.com/admin/#/reminders) to set up reminder and explore more
 ## Installation
 First version, I'm only support run Reminder Bot via docker [Reminder Bot Docker](https://hub.docker.com/r/luannt2909/go-reminder-bot)
 

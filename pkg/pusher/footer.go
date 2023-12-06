@@ -8,19 +8,19 @@ import (
 const GGChatMsgFooter = `
 ================
 Sent by: *%s*
-Powered by: <https://reminderbot.luciannguyen.blog/admin|reminder-bot>
+Powered by: <https://reminderbot.luciango.com/admin|reminder-bot>
 `
 
 const DiscordMsgFooter = `
 ================
 Sent by: **%s**
-Powered by: [reminder-bot](https://reminderbot.luciannguyen.blog/admin)
+Powered by: [reminder-bot](https://reminderbot.luciango.com/admin)
 `
 
 const defaultMsgFooter = `
 ================
 Sent by: **reminder-bot**
-Powered by: https://reminderbot.luciannguyen.blog/admin
+Powered by: https://reminderbot.luciango.com/admin
 `
 
 func InjectFooter(whType enum.WebhookType, author, msg string) string {
