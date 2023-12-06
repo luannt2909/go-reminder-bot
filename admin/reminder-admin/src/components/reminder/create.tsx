@@ -2,6 +2,7 @@ import React from 'react'
 import {BooleanInput, Create, SelectInput, SimpleForm, TextInput} from 'react-admin'
 import {WebhookTypes} from './webhookType'
 import {Box, Grid, Typography} from "@material-ui/core";
+import CronScheduleInput from "./CronScheduleInput";
 
 const ReminderCreate = (props) => {
     return (
@@ -17,13 +18,10 @@ const ReminderCreate = (props) => {
                 <Separator/>
 
                 <Typography variant="h6" gutterBottom>Cron Schedule Specification</Typography>
-                <TextInput source='schedule'
-                           sx={{width: "50%"}}
-                           required
-                           helperText="ex: '* * * * *', '@every 5m',... "/>
+                <CronScheduleInput/>
                 <Separator/>
-                <Typography variant="h6" gutterBottom>Webhook information</Typography>
 
+                <Typography variant="h6" gutterBottom>Webhook information</Typography>
                 <Grid container>
                     <Grid item xs={6} md={2}>
                         <Box sx={{width: '10%'}}>

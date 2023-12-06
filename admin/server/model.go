@@ -41,15 +41,16 @@ func (r GetListRequest) toGetListParams() util.GetListParams {
 }
 
 type Reminder struct {
-	ID          int64  `json:"id"`
-	Name        string `json:"name"`
-	IsActive    bool   `json:"is_active"`
-	Type        string `json:"type"`
-	Schedule    string `json:"schedule"`
-	NextTime    string `json:"next_time"`
-	Message     string `json:"message"`
-	Webhook     string `json:"webhook"`
-	WebhookType string `json:"webhook_type"`
+	ID            int64  `json:"id"`
+	Name          string `json:"name"`
+	IsActive      bool   `json:"is_active"`
+	Type          string `json:"type"`
+	Schedule      string `json:"schedule"`
+	ScheduleHuman string `json:"schedule_human"`
+	NextTime      string `json:"next_time"`
+	Message       string `json:"message"`
+	Webhook       string `json:"webhook"`
+	WebhookType   string `json:"webhook_type"`
 }
 
 func transformRemindersFromRemindersDB(reminders []reminder.Reminder) []Reminder {
@@ -67,15 +68,17 @@ func transformReminderFromReminderDB(t reminder.Reminder) Reminder {
 	} else {
 		nextTime = "invalid"
 	}
+	scheduleHuman := util.CronHumanReadable(t.Schedule)
 	return Reminder{
-		ID:          int64(t.Model.ID),
-		Name:        t.Name,
-		IsActive:    t.IsActive,
-		Schedule:    t.Schedule,
-		NextTime:    nextTime,
-		Message:     t.Message,
-		Webhook:     t.Webhook,
-		WebhookType: t.WebhookType.String(),
+		ID:            int64(t.Model.ID),
+		Name:          t.Name,
+		IsActive:      t.IsActive,
+		Schedule:      t.Schedule,
+		ScheduleHuman: scheduleHuman,
+		NextTime:      nextTime,
+		Message:       t.Message,
+		Webhook:       t.Webhook,
+		WebhookType:   t.WebhookType.String(),
 	}
 }
 

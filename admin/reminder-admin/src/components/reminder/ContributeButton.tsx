@@ -9,7 +9,7 @@ const ContributeButton = ({...props}) => {
         <>
             <Link to={SourceCodeURL}>
                 <Button label="Contribute">
-                    <IconGithub/>
+                    {/*<IconGithub/>*/}
                 </Button>
             </Link>
         </>

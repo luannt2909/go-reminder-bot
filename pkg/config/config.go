@@ -7,6 +7,8 @@ import (
 	"os"
 )
 
+const DevelopmentMode = false
+
 type DBConfig struct {
 	DBClient        string `env:"DB_CLIENT"`
 	DBConnectionURI string `env:"DB_CONNECTION_URI"`
@@ -19,6 +21,9 @@ type Config struct {
 }
 
 func LoadEnv() (cfg Config, err error) {
+	if DevelopmentMode {
+		return LoadEnvFromFile()
+	}
 	err = env.Parse(&cfg)
 	if err != nil {
 		log.Printf("failed to config load from ENV: %s", err)

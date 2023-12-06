@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"go-reminder-bot/pkg/config"
 )
 
 type Server interface {
@@ -26,7 +27,9 @@ func NewServer(handler Handler, authHandler gin.HandlerFunc) Server {
 func (s server) Start(ctx context.Context) {
 	h := s.handler
 	g := gin.Default()
-	g.Static("/admin", "./admin/reminder-admin/dist")
+	if config.DevelopmentMode == false {
+		g.Static("/admin", "./admin/reminder-admin/dist")
+	}
 	g.Use(cors.New(cors.Config{
 		AllowAllOrigins:  true,
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"},

@@ -8,7 +8,9 @@ import {
     List,
     TextField,
     TopToolbar,
+    WrapperField
 } from 'react-admin'
+import { Stack } from '@mui/material';
 import TestWebhookButton from "./TestWebhookButton";
 import ContributeButton from "./ContributeButton";
 
@@ -29,7 +31,12 @@ const ReminderList = (props) => {
                 <TextField source='id'/>
                 <TextField source='name'/>
                 <BooleanField source='is_active' label='Active'/>
-                <TextField source='schedule'/>
+                <WrapperField label="Schedule" >
+                    <Stack>
+                        <TextField source="schedule" sx={{ fontWeight: 'bold'}}/>
+                        <TextField source="schedule_human" />
+                    </Stack>
+                </WrapperField>
                 <TextField source='next_time'/>
                 <TextField source='webhook_type'/>
                 <TextField source='webhook' label='Webhook URL'/>
