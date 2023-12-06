@@ -6,7 +6,7 @@ import CronScheduleInput from "./CronScheduleInput";
 
 const ReminderEdit = (props) => {
     return (
-        <Edit title='Edit Reminder' {...props}>
+        <Edit title='Edit Reminder' {...props} redirect="list">
             <SimpleForm sx={{maxWidth: 1000}}>
                 <Typography variant="h6" gutterBottom>General</Typography>
                 <TextInput source='id' disabled/>
