@@ -62,9 +62,9 @@ func provideUserStorage(db *gorm.DB) user.Storage {
 	return user.NewStorage(db)
 }
 
-func provideServer(storage reminder.Storage, userStorage user.Storage, eventBus EventBus.Bus,
+func provideServer(cfg config.Config, storage reminder.Storage, userStorage user.Storage, eventBus EventBus.Bus,
 	pusher pusher.Pusher, tokenizer token.Tokenizer) server.Server {
-	handler := server.NewHandler(storage, userStorage, eventBus, pusher, tokenizer)
+	handler := server.NewHandler(cfg, storage, userStorage, eventBus, pusher, tokenizer)
 	return server.NewServer(*handler, server.AuthenticateUserHandler(tokenizer, userStorage))
 }
 

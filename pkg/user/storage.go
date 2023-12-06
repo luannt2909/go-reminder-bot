@@ -106,7 +106,6 @@ func (t *storage) GetActiveUsers(ctx context.Context) (users []User, err error) 
 
 func (t *storage) GetOne(ctx context.Context, id int64) (user User, err error) {
 	err = t.db.WithContext(ctx).First(&user, id).Error
-	fmt.Println(err)
 	return
 }
 

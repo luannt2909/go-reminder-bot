@@ -14,10 +14,19 @@ type Storage interface {
 	Update(ctx context.Context, reminder Reminder) error
 	GetActiveReminder(ctx context.Context) ([]Reminder, error)
 	GetActiveRemindersByUsers(ctx context.Context, emails []string) ([]Reminder, error)
+	CountRemindersByUser(ctx context.Context, email string) (int64, error)
 }
 
 type storage struct {
 	db *gorm.DB
+}
+
+func (t *storage) CountRemindersByUser(ctx context.Context, email string) (count int64, err error) {
+	err = t.db.WithContext(ctx).
+		Model(&Reminder{}).
+		Where("created_by = ?", email).
+		Count(&count).Error
+	return
 }
 
 func (t *storage) GetActiveRemindersByUsers(ctx context.Context, emails []string) (reminders []Reminder, err error) {

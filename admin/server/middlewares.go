@@ -31,7 +31,6 @@ func AuthenticateUserHandler(tokenizer token.Tokenizer, userStorage user.Storage
 			c.AbortWithStatus(http.StatusForbidden)
 			return
 		}
-		log.Println("Claim: ", claim)
 		if time.Unix(claim.IssuedAt, 0).Add(ExpireDuration).Before(time.Now()) {
 			c.AbortWithStatus(http.StatusForbidden)
 			return

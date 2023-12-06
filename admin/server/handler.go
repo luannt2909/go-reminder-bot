@@ -1,9 +1,11 @@
 package server
 
 import (
+	"errors"
 	"fmt"
 	"github.com/asaskevich/EventBus"
 	"github.com/gin-gonic/gin"
+	"go-reminder-bot/pkg/config"
 	"go-reminder-bot/pkg/consts"
 	"go-reminder-bot/pkg/enum"
 	"go-reminder-bot/pkg/pusher"
@@ -15,6 +17,7 @@ import (
 )
 
 type Handler struct {
+	globalCfg       config.Config
 	reminderStorage reminder.Storage
 	userStorage     user.Storage
 	pusher          pusher.Pusher
@@ -22,8 +25,8 @@ type Handler struct {
 	tokenizer token.Tokenizer
 }
 
-func NewHandler(reminderStorage reminder.Storage, userStorage user.Storage, eventBus EventBus.Bus, pusher pusher.Pusher, tokenizer token.Tokenizer) *Handler {
-	return &Handler{reminderStorage: reminderStorage, Bus: eventBus, userStorage: userStorage, pusher: pusher, tokenizer: tokenizer}
+func NewHandler(cfg config.Config, reminderStorage reminder.Storage, userStorage user.Storage, eventBus EventBus.Bus, pusher pusher.Pusher, tokenizer token.Tokenizer) *Handler {
+	return &Handler{globalCfg: cfg, reminderStorage: reminderStorage, Bus: eventBus, userStorage: userStorage, pusher: pusher, tokenizer: tokenizer}
 }
 
 func (h Handler) findReminders(c *gin.Context) {
@@ -114,6 +117,15 @@ func (h Handler) createReminder(c *gin.Context) {
 		return
 	}
 	user := ExtractUserFromCtx(c)
+	reminderTotal, err := h.reminderStorage.CountRemindersByUser(c, user.Email)
+	if err != nil {
+		_ = c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+	if reminderTotal >= int64(h.globalCfg.MaximumReminder) {
+		_ = c.AbortWithError(http.StatusInternalServerError, errors.New("you can only create a maximum of 5 reminders"))
+		return
+	}
 	reminder := reminder.Reminder{
 		Name:        req.Name,
 		Schedule:    req.Schedule,

@@ -3,11 +3,13 @@ package config
 import (
 	"github.com/caarlos0/env/v10"
 	"github.com/joho/godotenv"
+	"github.com/spf13/cast"
 	"log"
 	"os"
 )
 
 const DevelopmentMode = false
+const MaximumReminder = 5
 
 type DBConfig struct {
 	DBClient        string `env:"DB_CLIENT"`
@@ -16,8 +18,9 @@ type DBConfig struct {
 
 type Config struct {
 	DBConfig
-	Port          string `env:"PORT" envDefault:"2909"`
-	JwtSigningKey string `env:"JWT_SIGNING_KEY" envDefault:"CSwS88WnQjKGBAEI"`
+	Port            string `env:"PORT" envDefault:"2909"`
+	JwtSigningKey   string `env:"JWT_SIGNING_KEY" envDefault:"CSwS88WnQjKGBAEI"`
+	MaximumReminder uint   `env:"MAX_REMINDER" envDefault:"5"`
 }
 
 func LoadEnv() (cfg Config, err error) {
@@ -44,8 +47,12 @@ func LoadEnvFromFile() (cfg Config, err error) {
 			DBClient:        os.Getenv("DB_CLIENT"),
 			DBConnectionURI: os.Getenv("DB_CONNECTION_URI"),
 		},
-		Port:          os.Getenv("PORT"),
-		JwtSigningKey: os.Getenv("JWT_SIGNING_KEY"),
+		Port:            os.Getenv("PORT"),
+		JwtSigningKey:   os.Getenv("JWT_SIGNING_KEY"),
+		MaximumReminder: cast.ToUint(os.Getenv("MAX_REMINDER")),
+	}
+	if cfg.MaximumReminder == 0 {
+		cfg.MaximumReminder = MaximumReminder
 	}
 	log.Printf("config load from ENV: %+v", cfg)
 	return

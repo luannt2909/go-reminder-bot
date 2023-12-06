@@ -6,7 +6,7 @@ import CronScheduleInput from "./CronScheduleInput";
 
 const ReminderCreate = (props) => {
     return (
-        <Create title='Create a Reminder' {...props}>
+        <Create title='Create a Reminder' {...props} redirect="list">
             <SimpleForm sx={{maxWidth: 1000}}>
                 <Typography variant="h6" gutterBottom>General</Typography>
                 <TextInput source='name'
