@@ -7,12 +7,14 @@ import {
     EditButton,
     List,
     TextField,
-    TopToolbar,
-    WrapperField
+    TopToolbar, usePermissions,
+    WrapperField,
+    DateField
 } from 'react-admin'
 import { Stack } from '@mui/material';
 import TestWebhookButton from "./TestWebhookButton";
 import ContributeButton from "./ContributeButton";
+import {RoleAdmin} from "../user/role";
 
 // Usage
 const ListActions = ({props}) => (
@@ -23,12 +25,15 @@ const ListActions = ({props}) => (
     </TopToolbar>
 );
 const ReminderList = (props) => {
+    const { permissions } = usePermissions();
+    const isAdminRole = permissions == RoleAdmin;
     return (
         <List {...props}
               actions={<ListActions {...props}/>}
         >
             <DatagridConfigurable>
-                <TextField source='id'/>
+                {isAdminRole && <TextField source='id'/>}
+                {/*<TextField source='id'/>*/}
                 <TextField source='name'/>
                 <BooleanField source='is_active' label='Active'/>
                 <WrapperField label="Schedule" >
@@ -39,7 +44,15 @@ const ReminderList = (props) => {
                 </WrapperField>
                 <TextField source='next_time'/>
                 <TextField source='webhook_type'/>
-                <TextField source='webhook' label='Webhook URL'/>
+                {isAdminRole || <TextField source='webhook' label='Webhook URL'/>}
+
+                {isAdminRole &&
+                    <WrapperField label="Created By" sortBy={"created_by"}>
+                    <Stack>
+                        <TextField source="created_by" />
+                        <DateField source="updated_at" showTime={true} transform={value => new Date(value*1000)} />
+                    </Stack>
+                </WrapperField>}
                 <>
                     <EditButton/>
                     <TestWebhookButton label="Test" {...props}/>

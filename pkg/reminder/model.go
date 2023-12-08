@@ -21,7 +21,7 @@ var DefaultReminder = Reminder{
 	Name:        "Daily reminder report",
 	Schedule:    "* * * * *",
 	Message:     "report reminder please",
-	Webhook:     "webhook",
+	Webhook:     "this is webhook URL",
 	WebhookType: enum.WTGoogleChat,
 	IsActive:    false,
 	Model: gorm.Model{

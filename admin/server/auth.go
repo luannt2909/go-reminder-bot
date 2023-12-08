@@ -38,14 +38,10 @@ func (h Handler) Login(c *gin.Context) {
 		}
 	}
 	if u.Password != passwordHash {
-		// TODO: migrate new hash password
-		if req.Password != u.Password {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"message": "password is incorrect",
-			})
-			return
-		}
-		go h.userStorage.UpdateNewPassword(context.Background(), u.ID, passwordHash)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "password is incorrect",
+		})
+		return
 	}
 	if !u.IsActive {
 		c.JSON(http.StatusInternalServerError, gin.H{

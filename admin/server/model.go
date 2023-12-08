@@ -51,6 +51,8 @@ type Reminder struct {
 	Message       string `json:"message"`
 	Webhook       string `json:"webhook"`
 	WebhookType   string `json:"webhook_type"`
+	CreatedBy     string `json:"created_by"`
+	UpdatedAt     int64  `json:"updated_at"`
 }
 
 func transformRemindersFromRemindersDB(reminders []reminder.Reminder) []Reminder {
@@ -79,6 +81,8 @@ func transformReminderFromReminderDB(t reminder.Reminder) Reminder {
 		Message:       t.Message,
 		Webhook:       t.Webhook,
 		WebhookType:   t.WebhookType.String(),
+		CreatedBy:     t.CreatedBy,
+		UpdatedAt:     t.UpdatedAt.Unix(),
 	}
 }
 
