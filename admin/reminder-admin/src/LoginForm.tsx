@@ -72,6 +72,7 @@ export const LoginForm = (props: LoginFormProps) => {
                     type="password"
                     autoComplete="current-password"
                     validate={required()}
+                    helperText="If you do not have an account yet, enter your password to sign up for a new one."
                     fullWidth
                 />
 

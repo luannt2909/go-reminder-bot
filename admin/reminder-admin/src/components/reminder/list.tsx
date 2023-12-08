@@ -13,7 +13,6 @@ import {
 } from 'react-admin'
 import { Stack } from '@mui/material';
 import TestWebhookButton from "./TestWebhookButton";
-import ContributeButton from "./ContributeButton";
 import {RoleAdmin} from "../user/role";
 
 // Usage
@@ -21,7 +20,6 @@ const ListActions = ({props}) => (
     <TopToolbar>
         <TestWebhookButton label="Webhook Test" {...props} />
         <CreateButton/>
-        <ContributeButton/>
     </TopToolbar>
 );
 const ReminderList = (props) => {

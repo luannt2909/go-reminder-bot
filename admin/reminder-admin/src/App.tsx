@@ -11,9 +11,22 @@ import {Login} from "./LoginPage";
 import ReminderIcon from "@material-ui/icons/NotificationImportant";
 import PersonIcon from "@material-ui/icons/Person";
 import {RoleAdmin} from "./components/user/role";
+import {CustomLayout} from "./Layout";
+
+const randomBackground = () => {
+  const timeStamp = Date.now()
+  return timeStamp%2 === 1 ? "/lightfall.jpeg" : "/deep_blue.jpeg"
+}
+
+const CustomLoginPage = () => <Login backgroundImage={randomBackground()}/>;
 
 export const App = () => (
-  <Admin loginPage={Login} dataProvider={dataProvider} authProvider={authProvider}>
+  <Admin layout={CustomLayout}
+         loginPage={CustomLoginPage}
+         dataProvider={dataProvider}
+         authProvider={authProvider}
+         darkTheme={{ palette: { mode: 'dark' }}}
+  >
       {permissions => (
           <>
               <Resource
