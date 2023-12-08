@@ -12,7 +12,7 @@ import {CustomLayout} from "./Layout";
 
 const randomBackground = () => {
     const timeStamp = Date.now()
-    return timeStamp % 2 == 0 ? "/lightfall.jpeg" : "/deep_blue.jpeg"
+    return timeStamp % 2 == 0 ? "/admin/lightfall.jpeg" : "/admin/deep_blue.jpeg"
 }
 
 const CustomLoginPage = () => <Login backgroundImage={randomBackground()}/>;
