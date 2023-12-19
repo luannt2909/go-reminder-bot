@@ -1,8 +1,6 @@
 # Reminder Bot Technical Document
- 
-[[_TOC_]]
 
-## I. Overview:
+## I. Overview
 
 Reminder Bot is a user-friendly bot equipped with an intuitive admin UI that allows users to effortlessly manage their work reminders.   
 
@@ -12,11 +10,11 @@ With its simplicity and effectiveness, Reminder Bot enhances productivity and he
 * Reminder Bot: https://reminderbot.luciango.com/admin
 * Github: https://github.com/luannt2909/go-reminder-bot
 * Guideline: https://blog.luciango.com/post/how-to-setup-a-simple-reminder-bot
-## II. System Architecture:
+## II. System Architecture
 
-### 1. Architecture Component:
+### 1. Architecture Component
 ![System Overview](images/system_overview.png)
-#### Table component:
+#### Table component
 | Component        | Description                                        |
 |------------------|----------------------------------------------------|
 | User             | User                                               |
@@ -25,17 +23,17 @@ With its simplicity and effectiveness, Reminder Bot enhances productivity and he
 | MySQL            | Database storage                                   |
 | Room Chat        | Chat room such as: Google Chat, Discord, Slack,... |
 
-## III. UseCases And Diagrams:
+## III. UseCases And Diagrams
 
-### 3.1 Reminder Management:
+### 3.1 Reminder Management
 PlantURL: [Reminder Management Sequence Diagram] (diagrams/reminder_management_sequence_diagram.puml)
 ![Reminder Management Diagram](images/reminder_management_sequence_diagram.png)
-### 3.2 Cronjob Reminder:
+### 3.2 Cronjob Reminder
 PlantURL: [Reminder CronJob Sequence Diagram] (diagrams/reminder_cronjob_sequence_diagram.puml)
 ![Reminder CronJob Diagram](images/reminder_cronjob_sequence_diagram.png)
 
-## IV. Database Scheme:
-### Reminder Table :
+## IV. Database Schema
+### Reminder Table 
 
 | Field        | Type   | PK  | Example                    | Description                       |
 |--------------|--------|-----|----------------------------|-----------------------------------|
@@ -51,7 +49,7 @@ PlantURL: [Reminder CronJob Sequence Diagram] (diagrams/reminder_cronjob_sequenc
 | updated_at   | int    |     | 1688616552                 |                                   |
 | deleted_at   | int    |     | 1688616552                 |                                   |
 
-### User Table:
+### User Table
 | Field      | Type   | PK  | Example    | Description |
 |------------|--------|-----|------------|-------------|
 | ID         | int    | x   | 1          |             |
@@ -61,19 +59,19 @@ PlantURL: [Reminder CronJob Sequence Diagram] (diagrams/reminder_cronjob_sequenc
 | updated_at | int    |     | 1688616552 |             |
 | deleted_at | int    |     | 1688616552 |             |
 
-## V. API Specification:
+## V. API Specification
 Please see more at: [swagger](https://swagger.io/)
-### Base URL:
+### Base URL
 | Env         | Host                                    | 
 |-------------|-----------------------------------------|
 | PRODUCTION	 | https://reminderbot.luciango.com/api/v1 |
 
-### Base Header: {#base-header}
+### Base Header
 | Field          | Type              | Example Value     | Description  |
 |----------------|-------------------|-------------------|--------------|
 | Authorization	 | string (required) | "Bearer {Token}"	 | access token |
 
-### Format Response:
+### Format Response
 <table>
 <tr>
 <td> Success Response </td>
@@ -117,7 +115,7 @@ Please see more at: [swagger](https://swagger.io/)
 </tr>
 </table>
 
-### Error Code:
+### Error Code
 | error_code | Error                 | Description |
 |------------|-----------------------|-------------|
 | 1	         | SUCCESS               |             |
@@ -127,9 +125,9 @@ Please see more at: [swagger](https://swagger.io/)
 | -3         | AUTHENTICATION_FAILED |             |
 | -4         | INTERNAL_SERVER_ERROR |             |
 
-## VI. Deployment:
+## VI. Deployment
 
-### Reminder Bot:
+### Reminder Bot
 | Resource     | Description                                   |
 |--------------|-----------------------------------------------|
 | Sourcecode   | https://github.com/luannt2909/go-reminder-bot |
