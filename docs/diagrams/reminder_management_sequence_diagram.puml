@@ -1,0 +1,34 @@
+@startuml
+title <size: 20> Reminder Management Sequence Diagram
+autonumber "<b>[000]"
+skinparam BoxPadding 50
+skinparam ParticipantPadding 20
+'Define participants
+box Client #lightgreen
+actor User as user
+end box
+'Define box
+!pragma teoz true
+box Server #f7d7de
+participant "Reminder Admin" as admin #pink
+database "MySQL DB" as db
+participant "Cron Job" as cron #pink
+end box
+
+
+user -> admin++: CRUD reminder
+note right
+Request Header: {
+    "Authorization": "Bearer token",
+}
+
+end note
+admin --> admin: archive user info from access token
+
+admin -> db++: CRUD reminder
+admin <-- db--: CRUD success
+
+admin -> cron: fire event to update reminder job
+admin --> admin: build response data
+admin --> user--: 200 OK, return response
+@enduml
